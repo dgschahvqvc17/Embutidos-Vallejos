@@ -1,0 +1,85 @@
+@model Embutidos_Vallejos.Models.DTOs.ProductoCreateDto
+@{
+    ViewData["Title"] = "Nuevo Producto";
+    var categorias = ViewBag.Categorias as List<Embutidos_Vallejos.Models.DTOs.CategoriaDto>;
+}
+
+<div class="form-page">
+    <div class="form-card">
+        <div class="form-header">
+            <a asp-action="Productos" class="btn-back"><i class="fa-solid fa-arrow-left"></i></a>
+            <h2>Nuevo Producto</h2>
+            <p>Agrega un nuevo producto al catalogo</p>
+        </div>
+
+        <form asp-action="CrearProducto" method="post">
+            <div class="row g-3">
+                <div class="col-md-8">
+                    <label asp-for="Nombre" class="form-label-custom"></label>
+                    <input asp-for="Nombre" class="form-control-custom" placeholder="Nombre del producto" />
+                    <span asp-validation-for="Nombre" class="text-validation"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="CategoriaId" class="form-label-custom">Categoria</label>
+                    <select asp-for="CategoriaId" class="form-control-custom">
+                        <option value="">Seleccionar...</option>
+                        @if (categorias != null)
+                        {
+                            foreach (var cat in categorias)
+                            {
+                                <option value="@cat.CategoriaId">@cat.Nombre</option>
+                            }
+                        }
+                    </select>
+                    <span asp-validation-for="CategoriaId" class="text-validation"></span>
+                </div>
+                <div class="col-12">
+                    <label asp-for="Descripcion" class="form-label-custom"></label>
+                    <textarea asp-for="Descripcion" class="form-control-custom" rows="3" placeholder="Descripcion del producto"></textarea>
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="PrecioProduccion" class="form-label-custom">Precio Produccion (Bs)</label>
+                    <input asp-for="PrecioProduccion" class="form-control-custom" type="number" step="0.01" />
+                    <span asp-validation-for="PrecioProduccion" class="text-validation"></span>
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="PrecioVenta" class="form-label-custom">Precio Venta (Bs)</label>
+                    <input asp-for="PrecioVenta" class="form-control-custom" type="number" step="0.01" />
+                    <span asp-validation-for="PrecioVenta" class="text-validation"></span>
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="Stock" class="form-label-custom"></label>
+                    <input asp-for="Stock" class="form-control-custom" type="number" />
+                    <span asp-validation-for="Stock" class="text-validation"></span>
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="StockMinimo" class="form-label-custom">Stock Minimo</label>
+                    <input asp-for="StockMinimo" class="form-control-custom" type="number" />
+                    <span asp-validation-for="StockMinimo" class="text-validation"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Estado" class="form-label-custom"></label>
+                    <select asp-for="Estado" class="form-control-custom">
+                        <option value="Activo">Activo</option>
+                        <option value="Inactivo">Inactivo</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Imagen" class="form-label-custom">URL Imagen</label>
+                    <input asp-for="Imagen" class="form-control-custom" placeholder="URL de la imagen" />
+                </div>
+            </div>
+
+            <div class="form-footer">
+                <a asp-action="Productos" class="btn-cancel">Cancelar</a>
+                <button type="submit" class="btn-submit">
+                    <i class="fa-solid fa-plus me-2"></i> Crear Producto
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+
+}

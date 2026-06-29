@@ -1,0 +1,125 @@
+@model List<Embutidos_Vallejos.Models.DTOs.CarritoItemDto>
+@{
+    ViewData["Title"] = "Carrito de Compras";
+}
+
+<div class="page-header">
+    <h1 class="page-title">Carrito de Compras</h1>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="empty-state">
+        <i class="fa-solid fa-cart-shopping empty-icon"></i>
+        <h3>Tu carrito esta vacio</h3>
+        <p>Agrega productos desde nuestro catalogo</p>
+        <a asp-controller="Producto" asp-action="Index" class="btn-empty">
+            <i class="fa-solid fa-store me-2"></i> Ver Productos
+        </a>
+    </div>
+}
+else
+{
+    <div class="cart-layout">
+        <div class="cart-items">
+            @foreach (var item in Model)
+            {
+                <div class="cart-item" data-id="@item.ProductoId">
+                    <img src="@(item.ImagenProducto ?? "/img/LogoVallejos.png")" alt="@item.NombreProducto" class="cart-item-img" />
+                    <div class="cart-item-info">
+                        <div>
+                            <h4 class="cart-item-name">@(string.IsNullOrEmpty(item.NombreProducto) ? $"Producto #{item.ProductoId}" : item.NombreProducto)</h4>
+                            <p class="cart-item-price">@item.PrecioUnitario.ToString("C", new System.Globalization.CultureInfo("es-BO")) c/u</p>
+                        </div>
+                    </div>
+                    <div class="cart-item-qty">
+                        <button class="qty-btn" onclick="updateQty(@item.ProductoId, -1)"><i class="fa-solid fa-minus"></i></button>
+                        <span class="qty-value">@item.Cantidad</span>
+                        <button class="qty-btn" onclick="updateQty(@item.ProductoId, 1)"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                    <div class="cart-item-subtotal">
+                        <span class="subtotal-value">@((item.Cantidad * item.PrecioUnitario).ToString("C", new System.Globalization.CultureInfo("es-BO")))</span>
+                    </div>
+                    <button class="cart-item-remove" onclick="removeItem(@item.ProductoId)" title="Eliminar">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+            }
+        </div>
+
+        <div class="cart-summary">
+            <h4>Resumen</h4>
+            <div class="summary-row">
+                <span>Subtotal</span>
+                <span id="summarySubtotal">@Model.Sum(i => i.Cantidad * i.PrecioUnitario).ToString("C", new System.Globalization.CultureInfo("es-BO"))</span>
+            </div>
+            <div class="summary-row">
+                <span>Productos</span>
+                <span id="summaryCount">@Model.Sum(i => i.Cantidad) unidades</span>
+            </div>
+            <hr class="summary-divider" />
+            <div class="summary-row summary-total">
+                <span>Total</span>
+                <span id="summaryTotal">@Model.Sum(i => i.Cantidad * i.PrecioUnitario).ToString("C", new System.Globalization.CultureInfo("es-BO"))</span>
+            </div>
+            <a asp-controller="Pedido" asp-action="Checkout" class="btn-checkout">
+                <i class="fa-regular fa-credit-card"></i> Proceder al Pago
+            </a>
+            <a asp-controller="Producto" asp-action="Index" class="btn-continue">
+                <i class="fa-solid fa-store"></i> Seguir Comprando
+            </a>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        function updateQty(productoId, delta) {
+            const item = document.querySelector(`.cart-item[data-id="${productoId}"]`);
+            const qtySpan = item.querySelector('.qty-value');
+            let qty = parseInt(qtySpan.textContent) + delta;
+            if (qty < 1) qty = 1;
+
+            fetch('@Url.Action("ActualizarCantidad", "Carrito")', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `productoId=${productoId}&cantidad=${qty}`
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    qtySpan.textContent = qty;
+                    document.getElementById('summarySubtotal').textContent = data.total.toLocaleString('es-BO', { style: 'currency', currency: 'BOB' });
+                    document.getElementById('summaryTotal').textContent = data.total.toLocaleString('es-BO', { style: 'currency', currency: 'BOB' });
+                    document.getElementById('summaryCount').textContent = data.count + ' unidades';
+                    item.querySelector('.subtotal-value').textContent = data.subtotal.toLocaleString('es-BO', { style: 'currency', currency: 'BOB' });
+                    if (qty === 0) item.remove();
+                }
+            });
+        }
+
+        function removeItem(productoId) {
+            fetch('@Url.Action("Eliminar", "Carrito")', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `productoId=${productoId}`
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    const item = document.querySelector(`.cart-item[data-id="${productoId}"]`);
+                    item.style.transform = 'translateX(100px)';
+                    item.style.opacity = '0';
+                    setTimeout(() => {
+                        item.remove();
+                        document.getElementById('summarySubtotal').textContent = data.total.toLocaleString('es-BO', { style: 'currency', currency: 'BOB' });
+                        document.getElementById('summaryTotal').textContent = data.total.toLocaleString('es-BO', { style: 'currency', currency: 'BOB' });
+                        document.getElementById('summaryCount').textContent = data.count + ' unidades';
+                        if (!document.querySelector('.cart-item')) location.reload();
+                    }, 300);
+                }
+            });
+        }
+    </script>
+
+}

@@ -1,0 +1,169 @@
+@model List<Embutidos_Vallejos.Models.DTOs.ProductoDto>
+@{
+    ViewData["Title"] = "Almacén - Inventario";
+    var categorias = ViewBag.Categorias as List<Embutidos_Vallejos.Models.DTOs.CategoriaDto> ?? new();
+    var stockBajo = Model.Where(p => p.StockBajo).ToList();
+}
+
+<div class="page-header">
+    <h1 class="page-title"><i class="fa-solid fa-warehouse me-2"></i> Inventario</h1>
+    <p class="page-subtitle">Controla el stock y los niveles mínimos de los productos</p>
+</div>
+
+@if (TempData["Success"] is string s)
+{
+    <div class="alert-custom alert-success-custom alert-dismissible fade show" role="alert">@s<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+}
+@if (TempData["Error"] is string e)
+{
+    <div class="alert-custom alert-error-custom alert-dismissible fade show" role="alert">@e<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+}
+
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="mini-stat">
+            <span class="mini-stat-label">Total Productos</span>
+            <span class="mini-stat-value">@Model.Count</span>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="mini-stat">
+            <span class="mini-stat-label">Stock Total</span>
+            <span class="mini-stat-value">@Model.Sum(p => p.Stock)</span>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="mini-stat">
+            <span class="mini-stat-label">Stock Bajo</span>
+            <span class="mini-stat-value text-warning">@stockBajo.Count</span>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="mini-stat">
+            <span class="mini-stat-label">Valor Inventario</span>
+            <span class="mini-stat-value text-info" style="font-size:20px;">Bs @Model.Sum(p => p.Stock * p.PrecioProduccion).ToString("N0")</span>
+        </div>
+    </div>
+</div>
+
+@if (stockBajo.Any())
+{
+    <div class="alert-bajo-stock mb-4">
+        <div class="alert-bajo-header">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <strong>@stockBajo.Count producto(s) con stock bajo</strong>
+        </div>
+        <div class="alert-bajo-list">
+            @foreach (var p in stockBajo.Take(5))
+            {
+                <span class="bajo-item">@p.Nombre (<strong>@p.Stock</strong> / min: @p.StockMinimo)</span>
+            }
+            @if (stockBajo.Count > 5)
+            {
+                <span class="bajo-item">... y @(stockBajo.Count - 5) más</span>
+            }
+        </div>
+    </div>
+}
+
+<div class="filtros-bar mb-4">
+    <form method="get" class="d-flex gap-3 flex-wrap align-items-center">
+        <div class="filtro-group">
+            <i class="fa-solid fa-magnifying-glass filtro-icon"></i>
+            <input type="text" name="search" class="filtro-input" placeholder="Buscar producto..." value="@ViewBag.Search" />
+        </div>
+        <select name="categoriaId" class="filtro-select" onchange="this.form.submit()">
+            <option value="">Todas las categorias</option>
+            @foreach (var c in categorias)
+            {
+                <option value="@c.CategoriaId" selected="@(ViewBag.CategoriaId?.ToString() == c.CategoriaId.ToString())">@c.Nombre</option>
+            }
+        </select>
+        <a asp-action="Index" class="btn-filtro-clear" title="Limpiar filtros"><i class="fa-solid fa-xmark"></i></a>
+    </form>
+</div>
+
+<div class="table-container">
+    <table class="table-custom" id="inventarioTable">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Categoría</th>
+                <th>Stock Actual</th>
+                <th>Stock Mínimo</th>
+                <th>Estado</th>
+                <th>Ajustar Stock</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in Model)
+            {
+                <tr class="@(p.StockBajo ? "row-stock-bajo" : "")">
+                    <td>
+                        <strong>@p.Nombre</strong>
+                        @if (!string.IsNullOrEmpty(p.Descripcion))
+                        {
+                            <small class="d-block text-muted" style="font-size:11px;">@p.Descripcion</small>
+                        }
+                    </td>
+                    <td>@p.NombreCategoria</td>
+                    <td>
+                        <span class="@(p.StockBajo ? "text-warning fw-bold" : "") stock-value" id="stock-@p.ProductoId">@p.Stock</span>
+                        @if (p.StockBajo)
+                        {
+                            <i class="fa-solid fa-triangle-exclamation text-warning ms-1" title="Stock bajo"></i>
+                        }
+                    </td>
+                    <td>
+                        <form asp-action="ActualizarStockMinimo" asp-route-id="@p.ProductoId" method="post" class="d-flex gap-1 align-items-center" style="max-width:160px;">
+                            <input type="number" name="stockMinimo" class="form-control-custom-sm" value="@p.StockMinimo" min="0" />
+                            <button type="submit" class="btn-save-sm" title="Guardar mínimo"><i class="fa-solid fa-check"></i></button>
+                        </form>
+                    </td>
+                    <td>
+                        @if (p.Estado == "Activo")
+                        {
+                            <span class="badge-status status-active">Activo</span>
+                        }
+                        else
+                        {
+                            <span class="badge-status status-inactive">Inactivo</span>
+                        }
+                    </td>
+                    <td>
+                        <form asp-action="AjustarStock" asp-route-id="@p.ProductoId" method="post" class="d-flex gap-1 align-items-center stock-form">
+                            <button type="button" class="btn-stock btn-stock-minus stock-btn-adjust" data-target="stockInput-@p.ProductoId" data-amount="-1">&minus;</button>
+                            <input type="number" name="stockFinal" class="stock-input" id="stockInput-@p.ProductoId" value="@p.Stock" min="0" />
+                            <button type="button" class="btn-stock btn-stock-plus stock-btn-adjust" data-target="stockInput-@p.ProductoId" data-amount="1">+</button>
+                            <button type="submit" class="btn-save-stock" title="Guardar">
+                                <i class="fa-regular fa-floppy-disk"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            @if (!Model.Any())
+            {
+                <tr><td colspan="6" class="text-center py-4 text-secondary">No hay productos.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+
+    <script>
+        document.querySelectorAll('.stock-btn-adjust').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                var targetId = this.getAttribute('data-target');
+                var amount = parseInt(this.getAttribute('data-amount'));
+                var input = document.getElementById(targetId);
+                if (input) {
+                    var val = parseInt(input.value) || 0;
+                    var newVal = val + amount;
+                    if (newVal >= 0) input.value = newVal;
+                }
+            });
+        });
+    </script>
+}

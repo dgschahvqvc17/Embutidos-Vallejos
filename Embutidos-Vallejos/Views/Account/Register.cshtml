@@ -1,0 +1,184 @@
+@model RegisterViewModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crear Cuenta - Embutidos Vallejos</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #7A1F2A; --accent: #C9A94E; --bg-body: #0B0C10; --bg-card: #15161C; --bg-input: #1E1F28; --border-color: #262838; --text-primary: #E8E8EE; --text-muted: #55566A; --danger: #FF1744; --font-display: 'Playfair Display', serif; --font-body: 'Inter', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-body); min-height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; overflow-x: hidden; padding: 40px 0; }
+        .video-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; }
+        .video-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(10,11,15,0.75) 0%, rgba(0,0,0,0.55) 50%, rgba(10,11,15,0.7) 100%); z-index: -1; }
+        .back-home { position: fixed; top: 24px; left: 24px; z-index: 10; }
+        .back-home a { display: inline-flex; align-items: center; gap: 6px; color: rgba(232,232,238,0.5); text-decoration: none; font-size: 13px; font-weight: 500; padding: 8px 16px; border-radius: 6px; background: rgba(21,22,28,0.6); border: 1px solid rgba(38,40,56,0.5); backdrop-filter: blur(10px); transition: all 0.25s ease; }
+        .back-home a:hover { color: var(--accent); border-color: var(--accent); transform: translateX(-3px); }
+        .register-container { width: 100%; max-width: 500px; padding: 20px; position: relative; z-index: 1; }
+        .register-card { background: rgba(21,22,28,0.85); border: 1px solid rgba(38,40,56,0.6); border-radius: 12px; padding: 34px 32px 28px; backdrop-filter: blur(20px); }
+        .logo-section { text-align: center; margin-bottom: 24px; }
+        .logo-title { font-family: var(--font-display); font-weight: 900; font-size: 22px; color: var(--text-primary); letter-spacing: -0.3px; }
+        .logo-title span { color: var(--accent); }
+        .logo-subtitle { color: rgba(232,232,238,0.35); font-size: 10px; letter-spacing: 3px; text-transform: uppercase; margin-top: 4px; }
+        .form-label { color: rgba(232,232,238,0.4); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
+        .form-control { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 10px 12px; padding-left: 40px; color: #ffffff; font-size: 15px; transition: all 0.25s ease; height: 44px; width: 100%; }
+        .form-control:focus { background: rgba(255,255,255,0.08); border-color: var(--accent); box-shadow: 0 0 0 2px rgba(201,169,78,0.15); outline: none; color: #ffffff; }
+        .form-control::placeholder { color: rgba(255,255,255,0.25); }
+        .form-control:-webkit-autofill, .form-control:-webkit-autofill:hover, .form-control:-webkit-autofill:focus { -webkit-text-fill-color: #ffffff !important; -webkit-box-shadow: 0 0 0px 1000px rgba(42,44,58,0.9) inset !important; transition: background-color 5000s ease-in-out 0s; caret-color: #ffffff; }
+        .input-group { position: relative; }
+        .input-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.25); font-size: 14px; z-index: 4; pointer-events: none; }
+        .toggle-password { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.25); background: none; border: none; cursor: pointer; font-size: 14px; padding: 6px; z-index: 4; transition: color 0.2s; }
+        .toggle-password:hover { color: rgba(255,255,255,0.5); }
+        .btn-register { background: var(--primary); border: 1px solid var(--primary); border-radius: 6px; padding: 12px; font-size: 14px; font-weight: 600; color: #fff; width: 100%; transition: all 0.25s ease; letter-spacing: 0.3px; cursor: pointer; }
+        .btn-register:hover { background: #8E2633; border-color: #8E2633; }
+        .text-validation { color: var(--danger); font-size: 11px; margin-top: 2px; display: block; }
+        .alert-danger { background: rgba(255,23,68,0.08); border: 1px solid rgba(255,23,68,0.15); border-radius: 6px; color: var(--danger); font-size: 12px; padding: 10px 14px; margin-bottom: 16px; }
+        .alert-danger ul { list-style: none; padding: 0; margin: 0; }
+        .login-link { text-align: center; margin-top: 16px; }
+        .login-link span { color: rgba(232,232,238,0.4); font-size: 13px; }
+        .login-link a { color: var(--accent); text-decoration: none; font-weight: 600; transition: color 0.2s; }
+        .login-link a:hover { color: var(--accent); text-decoration: underline; }
+        .footer-text { text-align: center; margin-top: 16px; color: rgba(232,232,238,0.2); font-size: 10px; }
+        .row-fields { margin-bottom: 14px; }
+        .phone-wrapper { position: relative; }
+        .phone-prefix { position: absolute; left: 40px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.25); font-weight: 600; font-size: 13px; z-index: 4; pointer-events: none; letter-spacing: 0.3px; }
+        .phone-input { padding-left: 76px !important; }
+        @@media (max-width: 480px) { .register-card { padding: 26px 18px 22px; } .back-home { top: 16px; left: 16px; } .back-home a { font-size: 11px; padding: 6px 12px; } }
+    </style>
+</head>
+<body>
+    <video class="video-bg" autoplay muted loop playsinline>
+        <source src="~/video/video1.mp4" type="video/mp4" />
+    </video>
+    <div class="video-overlay"></div>
+
+    <div class="back-home">
+        <a asp-controller="Home" asp-action="Index"><i class="fa-solid fa-arrow-left"></i> Volver al inicio</a>
+    </div>
+    <div class="register-container">
+        <div class="register-card">
+            <div class="logo-section">
+                <div class="logo-title">Crear <span>Cuenta</span></div>
+                <div class="logo-subtitle">Embutidos Vallejos</div>
+            </div>
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert-danger"><div asp-validation-summary="ModelOnly"></div></div>
+            }
+
+            <form asp-action="Register" method="post">
+                <div class="row">
+                    <div class="col-md-6 row-fields">
+                        <label asp-for="Nombre" class="form-label"><i class="fa-regular fa-user me-1"></i> @Html.DisplayNameFor(m => m.Nombre)</label>
+                        <div class="input-group">
+                            <i class="fa-regular fa-user input-icon"></i>
+                            <input asp-for="Nombre" class="form-control" placeholder="Tu nombre" />
+                        </div>
+                        <span asp-validation-for="Nombre" class="text-validation"></span>
+                    </div>
+                    <div class="col-md-6 row-fields">
+                        <label asp-for="Apellido" class="form-label"><i class="fa-regular fa-user me-1"></i> @Html.DisplayNameFor(m => m.Apellido)</label>
+                        <div class="input-group">
+                            <i class="fa-regular fa-user input-icon"></i>
+                            <input asp-for="Apellido" class="form-control" placeholder="Tu apellido" />
+                        </div>
+                        <span asp-validation-for="Apellido" class="text-validation"></span>
+                    </div>
+                </div>
+
+                <div class="row-fields">
+                    <label asp-for="Telefono" class="form-label"><i class="fa-solid fa-phone me-1"></i> @Html.DisplayNameFor(m => m.Telefono)</label>
+                    <div class="input-group phone-wrapper">
+                        <i class="fa-solid fa-phone input-icon"></i>
+                        <span class="phone-prefix">+591</span>
+                        <input asp-for="Telefono" class="form-control phone-input" id="telefono" placeholder="70000000" maxlength="12" value="+591" />
+                    </div>
+                    <span asp-validation-for="Telefono" class="text-validation"></span>
+                    <small style="color: rgba(232,232,238,0.3); font-size: 10px; margin-top: 2px; display: block;"><i class="fa-regular fa-circle-info me-1"></i> Ingresa 8 digitos despues de +591</small>
+                </div>
+
+                <div class="row-fields">
+                    <label asp-for="Email" class="form-label"><i class="fa-regular fa-envelope me-1"></i> @Html.DisplayNameFor(m => m.Email)</label>
+                    <div class="input-group">
+                        <i class="fa-regular fa-envelope input-icon"></i>
+                        <input asp-for="Email" class="form-control" placeholder="tu@correo.com" />
+                    </div>
+                    <span asp-validation-for="Email" class="text-validation"></span>
+                </div>
+
+                <div class="row-fields">
+                    <label asp-for="Direccion" class="form-label"><i class="fa-solid fa-location-dot me-1"></i> @Html.DisplayNameFor(m => m.Direccion)</label>
+                    <div class="input-group">
+                        <i class="fa-solid fa-location-dot input-icon"></i>
+                        <input asp-for="Direccion" class="form-control" placeholder="Calle, ciudad, zona" />
+                    </div>
+                    <span asp-validation-for="Direccion" class="text-validation"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 row-fields">
+                        <label asp-for="Password" class="form-label"><i class="fa-solid fa-lock me-1"></i> @Html.DisplayNameFor(m => m.Password)</label>
+                        <div class="input-group">
+                            <i class="fa-solid fa-lock input-icon"></i>
+                            <input asp-for="Password" class="form-control" id="password" placeholder="Min. 6 caracteres" />
+                            <button type="button" class="toggle-password" onclick="togglePwd('password','toggleIcon1')"><i class="fa-regular fa-eye" id="toggleIcon1"></i></button>
+                        </div>
+                        <span asp-validation-for="Password" class="text-validation"></span>
+                    </div>
+                    <div class="col-md-6 row-fields">
+                        <label asp-for="ConfirmPassword" class="form-label"><i class="fa-solid fa-lock me-1"></i> @Html.DisplayNameFor(m => m.ConfirmPassword)</label>
+                        <div class="input-group">
+                            <i class="fa-solid fa-lock input-icon"></i>
+                            <input asp-for="ConfirmPassword" class="form-control" id="confirmPassword" placeholder="Repite la contrasena" />
+                            <button type="button" class="toggle-password" onclick="togglePwd('confirmPassword','toggleIcon2')"><i class="fa-regular fa-eye" id="toggleIcon2"></i></button>
+                        </div>
+                        <span asp-validation-for="ConfirmPassword" class="text-validation"></span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-register mt-2"><i class="fa-regular fa-user-plus me-2"></i> Crear Cuenta</button>
+            </form>
+
+            <div class="login-link">
+                <span>¿Ya tienes cuenta?</span>
+                <a asp-controller="Account" asp-action="Login">Inicia Sesion <i class="fa-solid fa-arrow-right ms-1" style="font-size: 11px;"></i></a>
+            </div>
+
+            <div class="footer-text">&copy; 2026 Embutidos Vallejos</div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script>
+        function togglePwd(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (input.type === 'password') { input.type = 'text'; icon.classList.replace('fa-eye', 'fa-eye-slash'); }
+            else { input.type = 'password'; icon.classList.replace('fa-eye-slash', 'fa-eye'); }
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const telInput = document.getElementById('telefono');
+            if (telInput) {
+                telInput.addEventListener('input', function(e) {
+                    let val = this.value;
+                    if (!val.startsWith('+591')) { val = '+591' + val.replace(/[^0-9]/g, ''); }
+                    let digits = val.replace('+591', '').replace(/\D/g, '').slice(0, 8);
+                    this.value = '+591' + digits;
+                });
+            }
+        });
+    </script>
+</body>
+</html>

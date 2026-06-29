@@ -1,0 +1,103 @@
+@model List<Embutidos_Vallejos.Models.DTOs.VentaDto>
+@{
+    ViewData["Title"] = "Mi Historial de Ventas";
+    var totalVentas = Model.Count;
+    var montoTotal = Model.Sum(v => v.Total);
+    var hoy = DateTime.Today;
+    var ventasHoy = Model.Count(v => v.FechaVenta.Date == hoy);
+    var montoHoy = Model.Where(v => v.FechaVenta.Date == hoy).Sum(v => v.Total);
+}
+
+<div class="page-header">
+    <h1 class="page-title">Mi Historial de Ventas</h1>
+    <p class="page-subtitle">Todas las ventas presenciales que has registrado</p>
+</div>
+
+@if (TempData["Success"] is string success)
+{
+    <div class="alert-custom alert-success-custom">@success</div>
+}
+
+<div class="historial-stats">
+    <div class="stat-card stat-red">
+        <div class="stat-icon"><i class="fa-solid fa-receipt"></i></div>
+        <div class="stat-info">
+            <h3>@totalVentas</h3>
+            <p>Ventas totales</p>
+        </div>
+    </div>
+    <div class="stat-card stat-gold">
+        <div class="stat-icon"><i class="fa-solid fa-coins"></i></div>
+        <div class="stat-info">
+            <h3>Bs @montoTotal.ToString("N2")</h3>
+            <p>Monto total</p>
+        </div>
+    </div>
+    <div class="stat-card stat-green">
+        <div class="stat-icon"><i class="fa-solid fa-calendar-day"></i></div>
+        <div class="stat-info">
+            <h3>@ventasHoy</h3>
+            <p>Ventas hoy</p>
+        </div>
+    </div>
+    <div class="stat-card stat-blue">
+        <div class="stat-icon"><i class="fa-solid fa-money-bill-trend-up"></i></div>
+        <div class="stat-info">
+            <h3>Bs @montoHoy.ToString("N2")</h3>
+            <p>Monto hoy</p>
+        </div>
+    </div>
+</div>
+
+@if (Model.Any())
+{
+    <div class="historial-list">
+        @foreach (var v in Model)
+        {
+            <div class="historial-card">
+                <div class="historial-card-top">
+                    <div class="historial-card-left">
+                        <div class="historial-card-id">#@v.VentaId</div>
+                        <div class="historial-card-cliente">
+                            <i class="fa-regular fa-user me-1"></i> @(v.NombreCliente ?? "Sin cliente")
+                        </div>
+                    </div>
+                    <div class="historial-card-right">
+                        <span class="historial-card-monto">Bs @v.Total.ToString("N2")</span>
+                        <span class="badge-status status-active">Completada</span>
+                    </div>
+                </div>
+                <div class="historial-card-bottom">
+                    <div class="historial-card-info">
+                        <span><i class="fa-regular fa-calendar me-1"></i> @v.FechaVenta.ToString("dd/MM/yy HH:mm")</span>
+                        <span><i class="fa-solid fa-circle me-1" style="color:var(--accent);font-size:6px;vertical-align:middle;"></i> @v.MetodoPago</span>
+                        @if (v.Detalles.Any())
+                        {
+                            <span><i class="fa-solid fa-box me-1"></i> @v.Detalles.Sum(d => d.Cantidad) items</span>
+                        }
+                    </div>
+                    <div class="historial-card-actions">
+                        <a asp-action="VentaDetalle" asp-route-id="@v.VentaId" class="btn-historial-detalle">
+                            <i class="fa-regular fa-eye me-1"></i> Ver detalle
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="empty-state">
+        <i class="fa-solid fa-store"></i>
+        <h3>Sin ventas registradas</h3>
+        <p>Aun no has registrado ninguna venta presencial.</p>
+        <a asp-action="NuevaVenta" class="btn-action btn-action-primary">
+            <i class="fa-solid fa-plus me-1"></i> Nueva Venta
+        </a>
+    </div>
+}
+
+@section Scripts {
+
+}

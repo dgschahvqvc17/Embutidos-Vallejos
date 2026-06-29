@@ -1,0 +1,142 @@
+@{
+    ViewData["Title"] = "Checkout";
+    var total = ViewBag.Total as decimal? ?? 0;
+}
+
+<div class="page-header">
+    <h1 class="page-title"><i class="fa-regular fa-credit-card"></i> Finalizar Pedido</h1>
+    <p class="page-subtitle">Revisa tu pedido y elige como pagar</p>
+</div>
+
+<div class="checkout-layout">
+    <div class="checkout-card">
+        <div class="checkout-card-header">
+            <i class="fa-regular fa-receipt"></i>
+            <h3>Resumen del Pedido</h3>
+        </div>
+        <div class="checkout-total-display">
+            <span>Total a pagar:</span>
+            <span class="total-amount">@total.ToString("C", new System.Globalization.CultureInfo("es-BO"))</span>
+        </div>
+    </div>
+
+    <div class="checkout-card">
+        <div class="checkout-card-header">
+            <i class="fa-regular fa-location-dot"></i>
+            <h3>Direccion de Entrega</h3>
+        </div>
+        <div class="checkout-card-body">
+            <div class="address-option-custom">
+                <input type="radio" name="direccion" id="dirGuardada" value="guardada" checked>
+                <label for="dirGuardada">
+                    <strong><i class="fa-regular fa-house me-1"></i> Mi direccion registrada</strong>
+                    <span>Usar la direccion que tienes en tu perfil</span>
+                </label>
+            </div>
+            <div class="address-option-custom">
+                <input type="radio" name="direccion" id="dirNueva" value="nueva">
+                <label for="dirNueva">
+                    <strong><i class="fa-regular fa-pen me-1"></i> Otra direccion</strong>
+                    <span>Ingresa una direccion diferente para esta entrega</span>
+                </label>
+            </div>
+            <div id="nuevaDireccion" class="address-input-wrap" style="display:none;">
+                <input type="text" id="direccionInput" placeholder="Calle, numero, zona, ciudad..." />
+            </div>
+        </div>
+    </div>
+
+    <div class="checkout-card">
+        <div class="checkout-card-header">
+            <i class="fa-regular fa-credit-card"></i>
+            <h3>Metodo de Pago</h3>
+        </div>
+        <div class="checkout-card-body">
+            <div class="payment-options">
+                <div class="payment-option" onclick="selectPayment(this, 'QR')">
+                    <div class="payment-icon"><i class="fa-solid fa-qrcode"></i></div>
+                    <div class="payment-info">
+                        <h4>Pago con QR</h4>
+                        <p>Escanea el codigo QR y paga desde tu banco</p>
+                    </div>
+                    <i class="fa-regular fa-circle-check payment-check"></i>
+                </div>
+                <div class="payment-option" onclick="selectPayment(this, 'PayPal')">
+                    <div class="payment-icon paypal-icon"><i class="fa-brands fa-paypal"></i></div>
+                    <div class="payment-info">
+                        <h4>PayPal</h4>
+                        <p>Paga con tu cuenta de PayPal de forma rapida y segura</p>
+                    </div>
+                    <i class="fa-regular fa-circle-check payment-check"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn-place-order" onclick="placeOrder()">
+        <i class="fa-regular fa-circle-check"></i> Realizar Pedido
+    </button>
+</div>
+
+@section Scripts {
+    <script>
+        let selectedPayment = 'QR';
+
+        function selectPayment(el, type) {
+            document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedPayment = type;
+        }
+
+        document.querySelector('.payment-option')?.classList.add('selected');
+
+        document.querySelectorAll('input[name="direccion"]').forEach(r => {
+            r.addEventListener('change', function() {
+                const container = document.getElementById('nuevaDireccion');
+                container.style.display = this.value === 'nueva' ? 'block' : 'none';
+                if (this.value === 'nueva') {
+                    container.querySelector('input').focus();
+                }
+            });
+        });
+
+        function placeOrder() {
+            const btn = document.querySelector('.btn-place-order');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Procesando...';
+
+            const dirRadio = document.querySelector('input[name="direccion"]:checked');
+            let direccion = null;
+            if (dirRadio.value === 'nueva') {
+                direccion = document.getElementById('direccionInput').value;
+                if (!direccion.trim()) {
+                    alert('Ingresa una direccion de entrega');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-regular fa-circle-check"></i> Realizar Pedido';
+                    return;
+                }
+            }
+
+            fetch('@Url.Action("RealizarPedido", "Pedido")', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `tipoPago=${selectedPayment}&direccionEntrega=${encodeURIComponent(direccion || '')}`
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    if (data.redirect) window.location.href = data.redirect;
+                } else {
+                    alert(data.message || 'Error al procesar el pedido');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-regular fa-circle-check"></i> Realizar Pedido';
+                }
+            })
+            .catch(() => {
+                alert('Error de conexion');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-regular fa-circle-check"></i> Realizar Pedido';
+            });
+        }
+    </script>
+}

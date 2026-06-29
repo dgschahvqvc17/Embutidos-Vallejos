@@ -1,0 +1,122 @@
+@model List<Embutidos_Vallejos.Models.DTOs.CategoriaDto>
+@{
+    ViewData["Title"] = "Gestion de Categorias";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="admin-title">Categorias</h1>
+        <p class="admin-subtitle">Clasificacion de productos</p>
+    </div>
+    <button type="button" class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#createModal">
+        <i class="fa-solid fa-plus me-2"></i> Nueva Categoria
+    </button>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert-custom alert-success-custom">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert-custom alert-error-custom">@TempData["Error"]</div>
+}
+
+<div class="table-container">
+    <table class="table-custom">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Descripcion</th>
+                <th>Productos</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var cat in Model)
+            {
+                <tr>
+                    <td>@cat.CategoriaId</td>
+                    <td><strong>@cat.Nombre</strong></td>
+                    <td>@(cat.Descripcion ?? "-")</td>
+                    <td><span class="badge-role">@cat.CantidadProductos</span></td>
+                    <td>
+                        <div class="action-btns">
+                            <button type="button" class="btn-icon btn-edit" title="Editar"
+                                    data-bs-toggle="modal" data-bs-target="#editModal-@cat.CategoriaId">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <form asp-action="EliminarCategoria" asp-route-id="@cat.CategoriaId" method="post" class="d-inline"
+                                  onsubmit="return confirm('¿Eliminar categoria @cat.Nombre?')">
+                                <button type="submit" class="btn-icon btn-delete" title="Eliminar">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- Edit Modal -->
+                <div class="modal fade" id="editModal-@cat.CategoriaId" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content modal-dark">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Editar Categoria</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <form asp-action="EditarCategoria" asp-route-id="@cat.CategoriaId" method="post">
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label class="form-label-custom">Nombre</label>
+                                        <input name="Nombre" class="form-control-custom" value="@cat.Nombre" required />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label-custom">Descripcion</label>
+                                        <textarea name="Descripcion" class="form-control-custom" rows="2">@cat.Descripcion</textarea>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn-cancel" data-bs-dismiss="modal">Cancelar</button>
+                                    <button type="submit" class="btn-submit-sm">Guardar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Create Modal -->
+<div class="modal fade" id="createModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content modal-dark">
+            <div class="modal-header">
+                <h5 class="modal-title">Nueva Categoria</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="CrearCategoria" method="post">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label-custom">Nombre</label>
+                        <input name="Nombre" class="form-control-custom" placeholder="Nombre de la categoria" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label-custom">Descripcion</label>
+                        <textarea name="Descripcion" class="form-control-custom" rows="2" placeholder="Descripcion opcional"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn-submit-sm">Crear</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+}

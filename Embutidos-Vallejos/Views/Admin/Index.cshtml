@@ -1,0 +1,123 @@
+@model Embutidos_Vallejos.Models.DTOs.DashboardDto
+@{
+    ViewData["Title"] = "Panel de Administracion";
+}
+
+<div class="admin-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="admin-title">Panel de Administracion</h1>
+            <p class="admin-subtitle">Bienvenido al sistema de gestion @(User.Identity?.Name ?? "Administrador")</p>
+        </div>
+        <div class="text-end">
+            <span class="badge-dashboard">@DateTime.Now.ToString("dddd, dd MMMM yyyy", new System.Globalization.CultureInfo("es-BO"))</span>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-3 col-6">
+        <div class="stat-card stat-red">
+            <div class="stat-icon"><i class="fa-solid fa-box"></i></div>
+            <div class="stat-info">
+                <h3>@Model.TotalProductos</h3>
+                <p>Productos</p>
+            </div>
+            <div class="stat-trend">
+                @if (Model.ProductosStockBajo > 0)
+                {
+                    <span class="text-warning"><i class="fa-solid fa-triangle-exclamation"></i> @Model.ProductosStockBajo stock bajo</span>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="stat-card stat-gold">
+            <div class="stat-icon"><i class="fa-solid fa-truck"></i></div>
+            <div class="stat-info">
+                <h3>@Model.TotalPedidos</h3>
+                <p>Pedidos totales</p>
+            </div>
+            <div class="stat-trend">
+                <span class="text-warning"><i class="fa-solid fa-clock"></i> @Model.PedidosPendientes pendientes</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="stat-card stat-green">
+            <div class="stat-icon"><i class="fa-solid fa-check-circle"></i></div>
+            <div class="stat-info">
+                <h3>@Model.PedidosEntregados</h3>
+                <p>Entregados</p>
+            </div>
+            <div class="stat-trend">
+                <span class="text-success"><i class="fa-solid fa-check"></i> Completados</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="stat-card stat-blue">
+            <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+            <div class="stat-info">
+                <h3>@Model.TotalClientes</h3>
+                <p>Clientes</p>
+            </div>
+            <div class="stat-trend">
+                <span><i class="fa-solid fa-user-tie"></i> @Model.TotalEmpleados empleados</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card-admin">
+            <div class="card-admin-header">
+                <h5><i class="fa-solid fa-chart-line me-2"></i> Ventas</h5>
+            </div>
+            <div class="card-admin-body text-center py-4">
+                <div class="row">
+                    <div class="col-6">
+                        <div class="metric-box">
+                            <div class="metric-value text-gold">@Model.VentasHoy.ToString("C", new System.Globalization.CultureInfo("es-BO"))</div>
+                            <div class="metric-label">Ventas Hoy</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="metric-box">
+                            <div class="metric-value text-red">@Model.VentasMes.ToString("C", new System.Globalization.CultureInfo("es-BO"))</div>
+                            <div class="metric-label">Ventas del Mes</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card-admin">
+            <div class="card-admin-header">
+                <h5><i class="fa-solid fa-bolt me-2"></i> Acciones Rapidas</h5>
+            </div>
+            <div class="card-admin-body">
+                <div class="quick-actions">
+                    <a asp-action="CrearProducto" class="quick-action-btn">
+                        <i class="fa-solid fa-plus"></i> Nuevo Producto
+                    </a>
+                    <a asp-action="CrearEmpleado" class="quick-action-btn">
+                        <i class="fa-solid fa-user-plus"></i> Nuevo Empleado
+                    </a>
+                    <a asp-action="Pedidos" class="quick-action-btn">
+                        <i class="fa-solid fa-list"></i> Ver Pedidos
+                    </a>
+                    <a asp-action="Reportes" class="quick-action-btn">
+                        <i class="fa-solid fa-chart-bar"></i> Reportes
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+}

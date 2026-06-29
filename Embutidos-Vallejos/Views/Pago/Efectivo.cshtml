@@ -1,0 +1,66 @@
+@model Embutidos_Vallejos.Models.DTOs.PedidoDto
+@{
+    ViewData["Title"] = "Pago en Efectivo";
+}
+
+<div class="page-header text-center">
+    <h1 class="page-title">Pago en Efectivo</h1>
+    <p class="page-subtitle">Pedido #@Model.PedidoId</p>
+</div>
+
+<div class="cash-container">
+    <div class="cash-card">
+        <div class="cash-icon-wrapper">
+            <i class="fa-solid fa-money-bill-wave cash-icon"></i>
+        </div>
+        <h3>Pago contra entrega</h3>
+        <p class="cash-desc">
+            Tu pedido sera preparado y entregado. Realizaras el pago en efectivo directamente al repartidor.
+        </p>
+
+        <div class="cash-amount">
+            <span class="cash-amount-label">Total a pagar:</span>
+            <span class="cash-amount-value">@Model.Total.ToString("C", new System.Globalization.CultureInfo("es-BO"))</span>
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.DireccionEntrega))
+        {
+            <div class="cash-address">
+                <i class="fa-solid fa-location-dot me-2"></i>
+                @Model.DireccionEntrega
+            </div>
+        }
+
+        <div class="cash-timeline mt-4">
+            <div class="timeline-step completed">
+                <div class="step-icon"><i class="fa-solid fa-check"></i></div>
+                <div class="step-info">
+                    <span class="step-title">Pedido Realizado</span>
+                    <span class="step-date">@Model.FechaPedido.ToString("dd/MM/yyyy HH:mm")</span>
+                </div>
+            </div>
+            <div class="timeline-step active">
+                <div class="step-icon"><i class="fa-solid fa-clock"></i></div>
+                <div class="step-info">
+                    <span class="step-title">Pendiente de Pago</span>
+                    <span class="step-date">Paga al recibir</span>
+                </div>
+            </div>
+            <div class="timeline-step">
+                <div class="step-icon"><i class="fa-solid fa-truck"></i></div>
+                <div class="step-info">
+                    <span class="step-title">Entrega</span>
+                    <span class="step-date">Pendiente</span>
+                </div>
+            </div>
+        </div>
+
+        <a asp-controller="Pedido" asp-action="Details" asp-route-id="@Model.PedidoId" class="btn-cash-order mt-4">
+            <i class="fa-regular fa-eye me-2"></i> Ver Estado del Pedido
+        </a>
+    </div>
+</div>
+
+@section Scripts {
+
+}

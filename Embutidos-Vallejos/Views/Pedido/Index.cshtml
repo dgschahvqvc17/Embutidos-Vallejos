@@ -1,0 +1,107 @@
+@model List<Embutidos_Vallejos.Models.DTOs.PedidoDto>
+@{
+    ViewData["Title"] = "Mis Pedidos";
+}
+
+<div class="page-header">
+    <h1 class="page-title">Mis Pedidos</h1>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="empty-state">
+        <i class="fa-solid fa-truck empty-icon"></i>
+        <h3>No tienes pedidos</h3>
+        <p>Realiza tu primer pedido desde nuestro catalogo</p>
+        <a asp-controller="Producto" asp-action="Index" class="btn-empty">
+            <i class="fa-solid fa-store me-2"></i> Ver Productos
+        </a>
+    </div>
+}
+else
+{
+    <div class="pedidos-list">
+        @foreach (var p in Model)
+        {
+            <a asp-action="Details" asp-route-id="@p.PedidoId" class="pedido-card">
+                <div class="pedido-header">
+                    <span class="pedido-id">Pedido #@p.PedidoId</span>
+                    @switch (p.Estado)
+                    {
+                        case "Pendiente": <span class="order-badge badge-pending">Pendiente</span>; break;
+                        case "Pagado": <span class="order-badge badge-paid">Pagado</span>; break;
+                        case "En Preparacion": <span class="order-badge badge-progress">En Preparacion</span>; break;
+                        case "En Camino": <span class="order-badge badge-shipping">En Camino</span>; break;
+                        case "Entregado": <span class="order-badge badge-delivered">Entregado</span>; break;
+                        case "Cancelado": <span class="order-badge badge-canceled">Cancelado</span>; break;
+                    }
+                </div>
+                <div class="pedido-body">
+                    <div class="pedido-info">
+                        <span class="pedido-date">@p.FechaPedido.ToString("dd/MM/yyyy HH:mm")</span>
+                        <span class="pedido-total">@p.Total.ToString("C", new System.Globalization.CultureInfo("es-BO"))</span>
+                    </div>
+                    <div class="pedido-products">
+                        @string.Join(", ", p.Detalles.Select(d => $"{d.NombreProducto} x{d.Cantidad}"))
+                    </div>
+                </div>
+                <div class="pedido-footer">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="pedido-action">Ver detalle <i class="fa-solid fa-arrow-right ms-1"></i></span>
+                        @if (p.Estado != "Cancelado")
+                        {
+                            <button class="btn-reorder" onclick="reorder(@p.PedidoId, this)" type="button">
+                                <i class="fa-solid fa-rotate"></i> Repetir Pedido
+                            </button>
+                        }
+                    </div>
+                </div>
+            </a>
+        }
+    </div>
+}
+
+@section Scripts {
+    <script>
+        function reorder(pedidoId, btn) {
+            const originalHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.style.opacity = '0.7';
+            fetch('@Url.Action("AgregarDelPedido", "Carrito")', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `pedidoId=${pedidoId}`
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    btn.innerHTML = '<i class="fa-solid fa-check"></i> Agregado';
+                    btn.style.background = 'linear-gradient(135deg, #16a34a 0%, #22c55e 100%)';
+                    btn.style.opacity = '1';
+                    setTimeout(() => {
+                        btn.innerHTML = originalHtml;
+                        btn.style.background = '';
+                        btn.style.opacity = '';
+                        btn.disabled = false;
+                    }, 2000);
+                    const badge = document.getElementById('cart-count-side');
+                    if (badge) {
+                        badge.textContent = data.count;
+                        badge.style.display = data.count > 0 ? 'flex' : 'none';
+                    }
+                } else {
+                    alert(data.message);
+                    btn.innerHTML = originalHtml;
+                    btn.style.opacity = '';
+                    btn.disabled = false;
+                }
+            })
+            .catch(() => {
+                alert('Error al conectar con el servidor');
+                btn.innerHTML = originalHtml;
+                btn.style.opacity = '';
+                btn.disabled = false;
+            });
+        }
+    </script>
+}

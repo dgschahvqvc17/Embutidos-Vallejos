@@ -1,0 +1,127 @@
+@model Embutidos_Vallejos.Models.DTOs.PagoReceiptDto
+@{
+    ViewData["Title"] = $"Comprobante Pedido #{Model.PedidoId}";
+}
+
+<div class="receipt-page">
+    <div class="receipt-actions no-print">
+        <button onclick="window.print()" class="btn-print">
+            <i class="fa-solid fa-print me-2"></i> Imprimir
+        </button>
+        <a asp-controller="Pedido" asp-action="Details" asp-route-id="@Model.PedidoId" class="btn-back-receipt">
+            <i class="fa-solid fa-arrow-left me-2"></i> Volver
+        </a>
+    </div>
+
+    <div class="receipt-card">
+        <div class="receipt-header">
+            <img src="~/img/LogoVallejos.png" alt="Embutidos Vallejos" class="receipt-logo" />
+            <h1>Embutidos Vallejos</h1>
+            <p class="receipt-subtitle">Sabor que trasciende</p>
+            <p class="receipt-type">COMPROBANTE DE PAGO</p>
+        </div>
+
+        <div class="receipt-divider"></div>
+
+        <div class="receipt-body">
+            <div class="receipt-info-grid">
+                <div class="receipt-info-item">
+                    <span class="receipt-label">Pedido #</span>
+                    <span class="receipt-value">@Model.PedidoId.ToString("D6")</span>
+                </div>
+                <div class="receipt-info-item">
+                    <span class="receipt-label">Fecha Pedido</span>
+                    <span class="receipt-value">@Model.FechaPedido.ToString("dd/MM/yyyy HH:mm")</span>
+                </div>
+                <div class="receipt-info-item">
+                    <span class="receipt-label">Fecha Pago</span>
+                    <span class="receipt-value">@Model.FechaPago.ToString("dd/MM/yyyy HH:mm")</span>
+                </div>
+                <div class="receipt-info-item">
+                    <span class="receipt-label">Cliente</span>
+                    <span class="receipt-value">@Model.NombreCliente</span>
+                </div>
+                @if (!string.IsNullOrEmpty(Model.DireccionEntrega))
+                {
+                    <div class="receipt-info-item full-width">
+                        <span class="receipt-label">Direccion</span>
+                        <span class="receipt-value">@Model.DireccionEntrega</span>
+                    </div>
+                }
+            </div>
+
+            <div class="receipt-payment-info">
+                <div class="payment-badge @(Model.TipoPago == "QR" ? "qr-badge" : Model.TipoPago == "PayPal" ? "paypal-badge" : "cash-badge")">
+                    <i class="fa-solid @(Model.TipoPago == "QR" ? "fa-qrcode" : Model.TipoPago == "PayPal" ? "fa-paypal" : "fa-money-bill-wave")"></i>
+                    @Model.TipoPago
+                </div>
+                <div class="payment-status @(Model.EstadoPago == "Completado" ? "status-completed" : "status-pending")">
+                    @Model.EstadoPago
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.CodigoTransaccion))
+            {
+                <div class="receipt-transaction">
+                    <span class="receipt-label">Codigo de Transaccion</span>
+                    <span class="receipt-transaction-id">@Model.CodigoTransaccion</span>
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(Model.ReferenciaPago))
+            {
+                <div class="receipt-transaction">
+                    <span class="receipt-label">Referencia</span>
+                    <span class="receipt-transaction-id">@Model.ReferenciaPago</span>
+                </div>
+            }
+
+            <table class="receipt-table">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Cant.</th>
+                        <th>Precio</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var d in Model.Detalles)
+                    {
+                        <tr>
+                            <td>@d.NombreProducto</td>
+                            <td>@d.Cantidad</td>
+                            <td>@d.PrecioUnitario.ToString("C", new System.Globalization.CultureInfo("es-BO"))</td>
+                            <td>@d.Subtotal.ToString("C", new System.Globalization.CultureInfo("es-BO"))</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <div class="receipt-total">
+                <span>TOTAL</span>
+                <span class="receipt-total-value">@Model.Monto.ToString("C", new System.Globalization.CultureInfo("es-BO"))</span>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.CodigoQR))
+            {
+                <div class="receipt-qr">
+                    <p class="qr-label">Codigo QR de verificacion</p>
+                    <img src="data:image/png;base64,@Model.CodigoQR" alt="QR" class="receipt-qr-img" />
+                </div>
+            }
+        </div>
+
+        <div class="receipt-divider"></div>
+
+        <div class="receipt-footer">
+            <p>Gracias por tu compra</p>
+            <p class="receipt-footer-text">Embutidos Vallejos - Cochabamba, Bolivia</p>
+            <p class="receipt-footer-text">Este comprobante es valido como respaldo de pago</p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+}

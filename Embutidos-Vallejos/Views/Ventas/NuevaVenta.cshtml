@@ -1,0 +1,327 @@
+@model List<Embutidos_Vallejos.Models.DTOs.ProductoDto>
+@{
+    ViewData["Title"] = "Nueva Venta Presencial";
+    var clientes = ViewBag.Clientes as List<Embutidos_Vallejos.Models.Entities.Cliente> ?? new();
+    var categorias = Model.Select(p => p.NombreCategoria).Distinct().OrderBy(c => c).ToList();
+}
+
+<div class="page-header">
+    <h1 class="page-title">Nueva Venta Presencial</h1>
+    <p class="page-subtitle">Registra una venta directa al cliente</p>
+</div>
+
+@if (TempData["Error"] is string err)
+{
+    <div class="alert-custom alert-error-custom mb-4">@err</div>
+}
+
+<form asp-action="NuevaVenta" method="post" id="ventaForm">
+    <div class="pos-layout">
+        <div class="pos-left">
+            <div class="pos-card pos-card-products">
+                <div class="pos-card-header">
+                    <h4><i class="fa-solid fa-box me-2"></i> Productos</h4>
+                    <span class="pos-count" id="selectedCount">0 seleccionados</span>
+                </div>
+
+                <div class="pos-toolbar">
+                    <div class="pos-search">
+                        <i class="fa-solid fa-search pos-search-icon"></i>
+                        <input type="text" id="productSearch" class="form-control-custom pos-search-input" placeholder="Buscar producto..." />
+                    </div>
+                    <div class="pos-cat-filters" id="catFilters">
+                        <button type="button" class="pos-cat-tab active" data-cat="all">Todos</button>
+                        @foreach (var cat in categorias)
+                        {
+                            <button type="button" class="pos-cat-tab" data-cat="@cat.ToLower()">@cat</button>
+                        }
+                    </div>
+                </div>
+
+                <div class="pos-product-grid" id="productGrid">
+                    @foreach (var p in Model)
+                    {
+                        <div class="pos-product-item" data-name="@p.Nombre.ToLower()" data-cat="@p.NombreCategoria.ToLower()" data-stock="@p.Stock">
+                            <div class="pos-product-img-wrap">
+                                @if (!string.IsNullOrEmpty(p.Imagen))
+                                {
+                                    <img src="@p.Imagen" alt="@p.Nombre" class="pos-product-img" />
+                                }
+                                else
+                                {
+                                    <div class="pos-product-img-placeholder">
+                                        <i class="fa-solid fa-drumstick-bite"></i>
+                                    </div>
+                                }
+                                @if (p.StockBajo)
+                                {
+                                    <span class="pos-stock-badge">Stock bajo</span>
+                                }
+                            </div>
+                            <div class="pos-product-body">
+                                <div class="pos-product-name">@p.Nombre</div>
+                                <div class="pos-product-meta">
+                                    <span class="pos-product-cat">@p.NombreCategoria</span>
+                                    <span class="pos-product-stock @(p.StockBajo ? "stock-low" : "")">Stock: @p.Stock</span>
+                                </div>
+                                <div class="pos-product-price">Bs @p.PrecioVenta.ToString("N2")</div>
+                                <div class="pos-product-actions">
+                                    <input type="hidden" name="Items[@(Model.IndexOf(p))].ProductoId" value="@p.ProductoId" />
+                                    <input type="hidden" name="Items[@(Model.IndexOf(p))].PrecioUnitario" value="@p.PrecioVenta" />
+                                    <button type="button" class="pos-qty-btn pos-qty-minus" @(p.Stock <= 0 ? "disabled" : "")><i class="fa-solid fa-minus"></i></button>
+                                    <input type="number" name="Items[@(Model.IndexOf(p))].Cantidad" class="pos-qty-input" value="0" min="0" max="@p.Stock" data-precio="@p.PrecioVenta" data-name="@p.Nombre" data-idx="@(Model.IndexOf(p))" @(p.Stock <= 0 ? "disabled" : "") />
+                                    <button type="button" class="pos-qty-btn pos-qty-plus" @(p.Stock <= 0 ? "disabled" : "")><i class="fa-solid fa-plus"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                @if (!Model.Any())
+                {
+                    <div class="pos-empty">No hay productos activos disponibles.</div>
+                }
+            </div>
+        </div>
+
+        <div class="pos-right">
+            <div class="pos-card">
+                <div class="pos-card-header">
+                    <h4><i class="fa-regular fa-user me-2"></i> Cliente</h4>
+                </div>
+                <div class="pos-card-body">
+                    <div class="pos-cliente-tabs mb-2">
+                        <button type="button" class="pos-cliente-tab active" data-cliente-tab="existente">Existente</button>
+                        <button type="button" class="pos-cliente-tab" data-cliente-tab="nuevo">Nuevo</button>
+                    </div>
+
+                    <div id="clienteExistenteSection">
+                        <div class="pos-search mb-2">
+                            <i class="fa-solid fa-search pos-search-icon" style="top:12px;"></i>
+                            <input type="text" id="clienteSearch" class="form-control-custom pos-search-input" placeholder="Buscar cliente..." style="padding-left:36px;" />
+                        </div>
+                        <select name="ClienteId" id="clienteSelect" class="form-control-custom pos-cliente-select" size="4">
+                            @foreach (var c in clientes.Take(10))
+                            {
+                                <option value="@c.ClienteId">@c.Nombre @c.Apellido - @c.Email</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div id="clienteNuevoSection" style="display:none;">
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <label class="form-label-custom">Nombre</label>
+                                <input name="NuevoClienteNombre" class="form-control-custom" placeholder="Nombre" />
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label-custom">Apellido</label>
+                                <input name="NuevoClienteApellido" class="form-control-custom" placeholder="Apellido" />
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label-custom">Telefono</label>
+                                <div class="phone-wrapper">
+                                    <span class="phone-prefix">+591</span>
+                                    <input name="NuevoClienteTelefono" class="form-control-custom phone-input" id="posClienteTel" placeholder="70000000" maxlength="12" />
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label-custom">Email</label>
+                                <input name="NuevoClienteEmail" class="form-control-custom" placeholder="correo@ejemplo.com" />
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label-custom">Direccion</label>
+                                <input name="NuevoClienteDireccion" class="form-control-custom" placeholder="Direccion" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pos-card">
+                <div class="pos-card-header">
+                    <h4><i class="fa-solid fa-money-bill me-2"></i> Metodo de Pago</h4>
+                </div>
+                <div class="pos-card-body">
+                    <div class="payment-grid">
+                        <label class="payment-card selected" id="pagoEfectivo">
+                            <input type="radio" name="MetodoPago" value="Efectivo" checked hidden />
+                            <i class="fa-solid fa-money-bill-wave"></i>
+                            <span>Efectivo</span>
+                        </label>
+                        <label class="payment-card" id="pagoQR">
+                            <input type="radio" name="MetodoPago" value="QR" hidden />
+                            <i class="fa-solid fa-qrcode"></i>
+                            <span>QR</span>
+                        </label>
+                        <label class="payment-card" id="pagoPayPal">
+                            <input type="radio" name="MetodoPago" value="PayPal" hidden />
+                            <i class="fa-brands fa-paypal"></i>
+                            <span>PayPal</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pos-card pos-card-total">
+                <div class="pos-total-summary">
+                    <div class="pos-total-row">
+                        <span>Productos</span>
+                        <span id="itemsCount">0</span>
+                    </div>
+                    <div class="pos-total-row">
+                        <span>Total</span>
+                        <span class="pos-total-value" id="totalDisplay">Bs 0.00</span>
+                    </div>
+                </div>
+                <button type="submit" class="btn-complete-venta">
+                    <i class="fa-regular fa-circle-check me-2"></i> Completar Venta
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        // Category filter tabs
+        document.querySelectorAll('.pos-cat-tab').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.pos-cat-tab').forEach(x => x.classList.remove('active'));
+                this.classList.add('active');
+                var cat = this.getAttribute('data-cat');
+                var searchTerm = document.getElementById('productSearch').value.toLowerCase();
+                document.querySelectorAll('.pos-product-item').forEach(item => {
+                    var matchCat = cat === 'all' || item.getAttribute('data-cat') === cat;
+                    var matchSearch = item.getAttribute('data-name').includes(searchTerm);
+                    item.style.display = matchCat && matchSearch ? '' : 'none';
+                });
+            });
+        });
+
+        // Search
+        document.getElementById('productSearch').addEventListener('input', function() {
+            var term = this.value.toLowerCase();
+            var activeCat = document.querySelector('.pos-cat-tab.active');
+            var cat = activeCat ? activeCat.getAttribute('data-cat') : 'all';
+            document.querySelectorAll('.pos-product-item').forEach(item => {
+                var matchCat = cat === 'all' || item.getAttribute('data-cat') === cat;
+                var matchSearch = item.getAttribute('data-name').includes(term);
+                item.style.display = matchCat && matchSearch ? '' : 'none';
+            });
+        });
+
+        // Cliente tabs
+        document.querySelectorAll('.pos-cliente-tab').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.pos-cliente-tab').forEach(x => x.classList.remove('active'));
+                this.classList.add('active');
+                var tab = this.getAttribute('data-cliente-tab');
+                document.getElementById('clienteExistenteSection').style.display = tab === 'existente' ? 'block' : 'none';
+                document.getElementById('clienteNuevoSection').style.display = tab === 'nuevo' ? 'block' : 'none';
+            });
+        });
+
+        // Payment selection
+        document.querySelectorAll('.payment-card').forEach(c => {
+            c.addEventListener('click', function() {
+                document.querySelectorAll('.payment-card').forEach(x => x.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+
+        // Quantity controls
+        document.querySelectorAll('.pos-qty-plus').forEach(btn => {
+            btn.addEventListener('click', function() {
+                var input = this.parentElement.querySelector('.pos-qty-input');
+                var max = parseInt(input.getAttribute('max')) || 999;
+                var val = parseInt(input.value) || 0;
+                if (val < max) {
+                    input.value = val + 1;
+                    updateTotal();
+                    highlightProduct(input);
+                }
+            });
+        });
+
+        document.querySelectorAll('.pos-qty-minus').forEach(btn => {
+            btn.addEventListener('click', function() {
+                var input = this.parentElement.querySelector('.pos-qty-input');
+                var val = parseInt(input.value) || 0;
+                if (val > 0) {
+                    input.value = val - 1;
+                    updateTotal();
+                }
+            });
+        });
+
+        document.querySelectorAll('.pos-qty-input').forEach(inp => {
+            inp.addEventListener('input', updateTotal);
+            inp.addEventListener('change', function() {
+                var max = parseInt(this.getAttribute('max')) || 999;
+                if (parseInt(this.value) > max) this.value = max;
+                if (parseInt(this.value) < 0) this.value = 0;
+                updateTotal();
+            });
+        });
+
+        function highlightProduct(input) {
+            var item = input.closest('.pos-product-item');
+            item.classList.add('has-qty');
+        }
+
+        function updateTotal() {
+            var total = 0;
+            var count = 0;
+            document.querySelectorAll('.pos-qty-input').forEach(inp => {
+                var qty = parseInt(inp.value) || 0;
+                var price = parseFloat(inp.getAttribute('data-precio')) || 0;
+                total += qty * price;
+                if (qty > 0) count++;
+                var item = inp.closest('.pos-product-item');
+                if (qty > 0) {
+                    item.classList.add('has-qty');
+                } else {
+                    item.classList.remove('has-qty');
+                }
+            });
+            document.getElementById('totalDisplay').textContent = 'Bs ' + total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            document.getElementById('selectedCount').textContent = count + ' seleccionados';
+            document.getElementById('itemsCount').textContent = count;
+        }
+
+        // Cliente search filter
+        document.getElementById('clienteSearch').addEventListener('input', function() {
+            var term = this.value.toLowerCase();
+            var select = document.getElementById('clienteSelect');
+            for (var i = 0; i < select.options.length; i++) {
+                select.options[i].style.display = select.options[i].text.toLowerCase().includes(term) ? '' : 'none';
+            }
+        });
+
+        // Form validation
+        document.getElementById('ventaForm').addEventListener('submit', function(e) {
+            var hasItems = false;
+            document.querySelectorAll('.pos-qty-input').forEach(inp => {
+                if (parseInt(inp.value) > 0) hasItems = true;
+            });
+            if (!hasItems) {
+                e.preventDefault();
+                alert('Debe seleccionar al menos un producto.');
+                return;
+            }
+            var tipoCliente = document.querySelector('.pos-cliente-tab.active');
+            if (tipoCliente && tipoCliente.getAttribute('data-cliente-tab') === 'nuevo') {
+                var nom = document.querySelector('[name="NuevoClienteNombre"]').value.trim();
+                var ape = document.querySelector('[name="NuevoClienteApellido"]').value.trim();
+                if (!nom || !ape) {
+                    e.preventDefault();
+                    alert('Debe ingresar nombre y apellido del cliente.');
+                    return;
+                }
+            }
+        });
+
+        setupPhoneInput('posClienteTel');
+    </script>
+}

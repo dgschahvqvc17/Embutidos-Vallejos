@@ -1,0 +1,117 @@
+@model List<Embutidos_Vallejos.Models.DTOs.EntregaDto>
+@{
+    ViewData["Title"] = "Repartidor - Entregas";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="admin-title">Entregas Pendientes</h1>
+        <p class="admin-subtitle">Gestiona las entregas asignadas</p>
+    </div>
+</div>
+
+@if (TempData["Success"] is string s)
+{
+    <div class="alert-custom alert-success-custom">@s</div>
+}
+@if (TempData["Error"] is string e)
+{
+    <div class="alert-custom alert-error-custom">@e</div>
+}
+
+@if (!Model.Any())
+{
+    <div class="empty-state">
+        <i class="fa-solid fa-truck-fast"></i>
+        <h3>No hay entregas pendientes</h3>
+        <p>Todas las entregas han sido completadas.</p>
+    </div>
+}
+else
+{
+    <div class="row g-4">
+        @foreach (var entrega in Model)
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="delivery-card">
+                    <div class="delivery-header">
+                        <span class="delivery-id">#@entrega.EntregaId</span>
+                        <span class="badge-status @(entrega.EstadoEntrega == "Pendiente" ? "status-pending" : "status-info")">
+                            @entrega.EstadoEntrega
+                        </span>
+                    </div>
+                    <div class="delivery-body">
+                        <div class="delivery-info">
+                            <span>Pedido</span>
+                            <strong>#@entrega.PedidoId</strong>
+                        </div>
+                        <div class="delivery-info">
+                            <span>Repartidor</span>
+                            <strong>@(entrega.NombreRepartidor ?? "-")</strong>
+                        </div>
+                        @if (!string.IsNullOrEmpty(entrega.PlacaVehiculo))
+                        {
+                            <div class="delivery-info">
+                                <span>Vehiculo</span>
+                                <strong>@entrega.PlacaVehiculo</strong>
+                            </div>
+                        }
+                        @if (entrega.EstadoEntrega == "En Camino")
+                        {
+                            <div class="delivery-info">
+                                <span>Salida</span>
+                                <strong>@entrega.FechaSalida?.ToString("dd/MM HH:mm")</strong>
+                            </div>
+                        }
+                    </div>
+                    <div class="delivery-actions">
+                        @if (entrega.EstadoEntrega == "Pendiente")
+                        {
+                            <form asp-action="IniciarEntrega" asp-route-id="@entrega.EntregaId" method="post">
+                                <button type="submit" class="btn btn-outline-success btn-sm w-100">
+                                    <i class="fa-solid fa-play me-1"></i> Iniciar Entrega
+                                </button>
+                            </form>
+                        }
+                        else if (entrega.EstadoEntrega == "En Camino")
+                        {
+                            <button type="button" class="btn btn-outline-primary btn-sm w-100"
+                                    data-bs-toggle="modal" data-bs-target="#completarModal-@entrega.EntregaId">
+                                <i class="fa-solid fa-check me-1"></i> Completar Entrega
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Complete Modal -->
+            <div class="modal fade" id="completarModal-@entrega.EntregaId" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content modal-dark">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Completar Entrega #@entrega.EntregaId</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <form asp-action="CompletarEntrega" asp-route-id="@entrega.EntregaId" method="post">
+                            <div class="modal-body">
+                                <p class="text-muted mb-3">Registra la finalizacion de la entrega del Pedido #@entrega.PedidoId</p>
+                                <label class="form-label-custom">Observaciones (opcional)</label>
+                                <textarea name="observaciones" class="form-control-custom" rows="3" placeholder="Notas sobre la entrega..."></textarea>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn-cancel" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn-submit-sm">
+                                    <i class="fa-solid fa-check me-1"></i> Completar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@section Scripts {
+
+}

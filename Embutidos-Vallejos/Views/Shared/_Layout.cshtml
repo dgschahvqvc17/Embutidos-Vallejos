@@ -1,0 +1,295 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Embutidos Vallejos</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Embutidos_Vallejos.styles.css" asp-append-version="true" />
+</head>
+<body>
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <div class="sidebar-layout">
+            <aside class="sidebar" id="sidebar">
+                <div class="sidebar-header">
+                    <a class="sidebar-brand" asp-controller="Home" asp-action="Index">
+                        <img src="~/img/LogoVallejos.png" alt="Embutidos Vallejos" height="36" class="me-2" />
+                        <span class="brand-text">Embutidos <span class="brand-highlight">Vallejos</span></span>
+                    </a>
+                    <button class="sidebar-close d-lg-none" type="button" onclick="toggleSidebar()" aria-label="Cerrar">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <nav class="sidebar-nav">
+                    @if (User.IsInRole("Administrador"))
+                    {
+                        <div class="sidebar-label">Panel de Control</div>
+                        <a class="sidebar-link" asp-controller="Admin" asp-action="Index">
+                            <i class="fa-solid fa-gauge-high"></i> Dashboard
+                        </a>
+                        <a class="sidebar-link" asp-controller="Admin" asp-action="Empleados">
+                            <i class="fa-solid fa-user-tie"></i> Empleados
+                        </a>
+                        <a class="sidebar-link" asp-controller="Admin" asp-action="Productos">
+                            <i class="fa-solid fa-box"></i> Productos
+                        </a>
+                        <a class="sidebar-link" asp-controller="Admin" asp-action="Pedidos">
+                            <i class="fa-solid fa-truck"></i> Pedidos
+                        </a>
+                        <a class="sidebar-link" asp-controller="Admin" asp-action="Reportes">
+                            <i class="fa-solid fa-chart-bar"></i> Reportes
+                        </a>
+                    }
+                    else if (User.IsInRole("Producción"))
+                    {
+                        <div class="sidebar-label">Producción</div>
+                        <a class="sidebar-link" asp-controller="Produccion" asp-action="Index">
+                            <i class="fa-solid fa-industry"></i> Productos
+                        </a>
+                    }
+                    else if (User.IsInRole("Ventas"))
+                    {
+                        <div class="sidebar-label">Pedidos</div>
+                        <a class="sidebar-link" asp-controller="Ventas" asp-action="Index">
+                            <i class="fa-regular fa-receipt"></i> Gestionar Pedidos
+                        </a>
+                        <div class="sidebar-divider"></div>
+                        <div class="sidebar-label">Ventas Presenciales</div>
+                        <a class="sidebar-link" asp-controller="Ventas" asp-action="NuevaVenta">
+                            <i class="fa-solid fa-cash-register"></i> Nueva Venta
+                        </a>
+                        <a class="sidebar-link" asp-controller="Ventas" asp-action="Historial">
+                            <i class="fa-regular fa-clock"></i> Historial
+                        </a>
+                    }
+                    else if (User.IsInRole("Almacén"))
+                    {
+                        <div class="sidebar-label">Almacén</div>
+                        <a class="sidebar-link" asp-controller="Almacen" asp-action="Index">
+                            <i class="fa-solid fa-warehouse"></i> Inventario
+                        </a>
+                    }
+                    else if (User.IsInRole("Repartidor"))
+                    {
+                        <div class="sidebar-label">Repartidor</div>
+                        <a class="sidebar-link" asp-controller="Repartidor" asp-action="Index">
+                            <i class="fa-solid fa-truck-fast"></i> Entregas
+                        </a>
+                    }
+                    else if (User.FindFirstValue("UserType") == "Cliente")
+                    {
+                        <div class="sidebar-label">Cliente</div>
+                        <a class="sidebar-link" asp-controller="Home" asp-action="Index">
+                            <i class="fa-solid fa-house"></i> Inicio
+                        </a>
+                        <a class="sidebar-link" asp-controller="Producto" asp-action="Index">
+                            <i class="fa-solid fa-store"></i> Productos
+                        </a>
+                        <a class="sidebar-link" asp-controller="Pedido" asp-action="Index">
+                            <i class="fa-solid fa-receipt"></i> Pedidos
+                        </a>
+                        <a class="sidebar-link position-relative" asp-controller="Carrito" asp-action="Index">
+                            <i class="fa-solid fa-cart-shopping"></i> Carrito
+                            <span id="cart-count-side" class="cart-badge-side" style="display:none;">0</span>
+                        </a>
+                    }
+
+                    <div class="sidebar-divider"></div>
+                    <div class="sidebar-label">Mi Cuenta</div>
+                    <a class="sidebar-link" asp-controller="Perfil" asp-action="Index">
+                        <i class="fa-regular fa-user"></i> Mi Perfil
+                    </a>
+                    <a class="sidebar-link" asp-controller="Account" asp-action="Logout">
+                        <i class="fa-regular fa-arrow-right-from-bracket"></i> Cerrar Sesion
+                    </a>
+                </nav>
+
+                <div class="sidebar-footer">
+                    <div class="sidebar-user">
+                        <div class="sidebar-avatar">
+                            <i class="fa-regular fa-circle-user"></i>
+                        </div>
+                        <div class="sidebar-user-info">
+                            <span class="sidebar-user-name">@User.Identity?.Name</span>
+                            @{
+                                var roleName = User.FindFirstValue(ClaimTypes.Role) ?? "";
+                                if (User.FindFirstValue("UserType") == "Cliente")
+                                {
+                                    <span class="sidebar-user-role">Cliente</span>
+                                }
+                                else if (!string.IsNullOrEmpty(roleName))
+                                {
+                                    <span class="sidebar-user-role">@roleName</span>
+                                }
+                                else
+                                {
+                                    <span class="sidebar-user-role">Empleado</span>
+                                }
+                            }
+                        </div>
+                    </div>
+                    <a class="sidebar-logout" asp-controller="Account" asp-action="Logout" title="Cerrar Sesion">
+                        <i class="fa-regular fa-right-from-bracket"></i>
+                    </a>
+                </div>
+            </aside>
+
+            <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+            <main class="main-content">
+                <div class="topbar">
+                    <button class="topbar-toggle d-lg-none" type="button" onclick="toggleSidebar()" aria-label="Menu">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div class="topbar-title">@ViewData["Title"]</div>
+                    <div class="topbar-spacer"></div>
+                    <a class="topbar-profile-link d-none d-sm-inline-flex" asp-controller="Perfil" asp-action="Index" title="Mi Perfil">
+                        <i class="fa-regular fa-circle-user"></i>
+                    </a>
+                </div>
+                <div class="container-fluid py-4">
+                    @RenderBody()
+                </div>
+            </main>
+        </div>
+    }
+    else
+    {
+        <header>
+            <nav class="navbar navbar-expand-lg navbar-red">
+                <div class="container">
+                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                        <img src="~/img/LogoVallejos.png" alt="Embutidos Vallejos" height="40" class="me-2" />
+                        <span class="brand-text-white">Embutidos <span class="brand-highlight-red">Vallejos</span></span>
+                    </a>
+                    <button class="navbar-toggler navbar-toggler-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav ms-auto align-items-lg-center">
+                            <li class="nav-item">
+                                <a class="nav-link nav-link-white" asp-area="" asp-controller="Home" asp-action="Index">
+                                    <i class="fa-solid fa-house me-1"></i> Inicio
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link nav-link-white" asp-controller="Producto" asp-action="Index">
+                                    <i class="fa-solid fa-store me-1"></i> Productos
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link btn-login-nav-light" asp-controller="Account" asp-action="Login">
+                                    <i class="fa-regular fa-arrow-right-to-bracket me-1"></i> Iniciar Sesion
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <main>
+            @if (ViewData["FullWidth"] is true)
+            {
+                @RenderBody()
+            }
+            else
+            {
+                <div class="container py-4">
+                    @RenderBody()
+                </div>
+            }
+        </main>
+
+        @if (ViewData["FullWidth"] is not true)
+        {
+            <footer class="footer">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <p class="mb-0">&copy; @DateTime.Now.Year - Embutidos Vallejos &mdash; Sabor que trasciende</p>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <a asp-area="" asp-controller="Home" asp-action="Privacy" class="footer-link">Privacidad</a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        }
+    }
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        function togglePwd(inputId, iconId) {
+            var input = document.getElementById(inputId);
+            var icon = document.getElementById(iconId);
+            if (!input || !icon) return;
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+
+        function setupPhoneInput(inputId) {
+            var el = document.getElementById(inputId);
+            if (!el) return;
+            el.addEventListener('input', function() {
+                var val = this.value;
+                if (!val.startsWith('+591')) {
+                    val = '+591' + val.replace(/[^0-9]/g, '');
+                }
+                var digits = val.replace('+591', '').replace(/\D/g, '').slice(0, 8);
+                this.value = '+591' + digits;
+            });
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('sidebar-open');
+            document.getElementById('sidebar-overlay').classList.toggle('sidebar-overlay-show');
+        }
+
+        $(function() {
+            document.querySelectorAll('.phone-input').forEach(function(el) {
+                setupPhoneInput(el.id);
+            });
+
+            function updateCartBadge() {
+                if ($('#cart-count-side').length) {
+                    $.get('@Url.Action("ObtenerConteo", "Carrito")', function(data) {
+                        const badge = $('#cart-count-side');
+                        badge.text(data.count);
+                        badge.toggle(data.count > 0);
+                    });
+                }
+            }
+            updateCartBadge();
+
+            var links = document.querySelectorAll('.sidebar-link');
+            var currentPath = window.location.pathname.toLowerCase();
+            links.forEach(function(link) {
+                var href = link.getAttribute('href');
+                if (href && currentPath.indexOf(href.toLowerCase()) === 0 && href !== '/') {
+                    link.classList.add('active');
+                }
+                if (href === '/' && currentPath === '/') {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

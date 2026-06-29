@@ -1,0 +1,61 @@
+@model Embutidos_Vallejos.Models.DTOs.PedidoDto
+@{
+    ViewData["Title"] = "Pago con QR";
+}
+
+<div class="page-header text-center">
+    <h1 class="page-title">Pago con Codigo QR</h1>
+    <p class="page-subtitle">Pedido #@Model.PedidoId - Total: Bs @Model.Total.ToString("N2")</p>
+</div>
+
+<div class="qr-container">
+    <div class="qr-card">
+        <div class="qr-header">
+            <i class="fa-solid fa-qrcode qr-header-icon"></i>
+            <h2>Escanea el QR para pagar</h2>
+            <p>Utiliza tu aplicacion bancaria para escanear el codigo y completar el pago</p>
+        </div>
+
+        <div class="qr-body">
+            <div class="qr-code-wrapper">
+                <img src="data:image/png;base64,@ViewBag.QRCode" alt="QR de pago" class="qr-code-img" />
+            </div>
+
+            <div class="qr-details">
+                <div class="qr-detail-item">
+                    <span class="qr-detail-label">Referencia</span>
+                    <span class="qr-detail-value" style="font-size:12px;word-break:break-all;">@ViewBag.Referencia</span>
+                </div>
+                <div class="qr-detail-item">
+                    <span class="qr-detail-label">Monto</span>
+                    <span class="qr-detail-value qr-monto">Bs @Model.Total.ToString("N2")</span>
+                </div>
+                <div class="qr-detail-item">
+                    <span class="qr-detail-label">Concepto</span>
+                    <span class="qr-detail-value">Pago Embutidos Vallejos - Pedido #@Model.PedidoId</span>
+                </div>
+            </div>
+
+            <div class="alert-custom alert-info-custom mt-3">
+                <i class="fa-solid fa-circle-info me-2"></i>
+                Despues de realizar el pago, haz clic en "Confirmar Pago" para validar tu transaccion.
+            </div>
+        </div>
+
+        <div class="qr-actions">
+            <form asp-action="ConfirmarQR" asp-route-pedidoId="@Model.PedidoId" method="post" style="width:100%;">
+                <input type="hidden" name="referencia" value="@ViewBag.Referencia" />
+                <button type="submit" class="btn-confirm-qr">
+                    <i class="fa-regular fa-circle-check me-2"></i> Confirmar Pago
+                </button>
+            </form>
+            <a asp-controller="Pedido" asp-action="Details" asp-route-id="@Model.PedidoId" class="btn-volver">
+                <i class="fa-regular fa-arrow-left me-1"></i> Pagare despues
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+}

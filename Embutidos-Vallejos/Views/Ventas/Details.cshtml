@@ -1,0 +1,76 @@
+@model Embutidos_Vallejos.Models.DTOs.PedidoDto
+@{
+    ViewData["Title"] = "Detalle del Pedido #" + Model.PedidoId;
+    var estados = new[] { "Pendiente", "En Preparacion", "En Camino", "Entregado", "Cancelado" };
+}
+
+<div class="mb-4">
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+        <i class="fa-regular fa-arrow-left me-1"></i> Volver
+    </a>
+</div>
+
+@if (TempData["Success"] is string s)
+{
+    <div class="alert alert-success alert-dismissible fade show">@s<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+}
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card-detail">
+            <h5 class="card-detail-title">Productos</h5>
+            <div class="table-container">
+                <table class="table-custom">
+                    <thead>
+                        <tr><th>Producto</th><th>Cant</th><th>P.Unit</th><th>Subtotal</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var d in Model.Detalles)
+                        {
+                            <tr>
+                                <td>@d.NombreProducto</td>
+                                <td>@d.Cantidad</td>
+                                <td>Bs @d.PrecioUnitario.ToString("N2")</td>
+                                <td>Bs @d.Subtotal.ToString("N2")</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr><td colspan="3" class="text-end fw-bold">Total:</td><td class="fw-bold">Bs @Model.Total.ToString("N2")</td></tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card-detail">
+            <h5 class="card-detail-title">Informacion</h5>
+            <div class="info-list">
+                <div><span>Cliente</span><strong>@Model.NombreCliente</strong></div>
+                <div><span>Fecha</span><strong>@Model.FechaPedido.ToString("dd/MM/yyyy HH:mm")</strong></div>
+                <div><span>Direccion</span><strong>@(Model.DireccionEntrega ?? "-")</strong></div>
+                <div><span>Pago</span><strong>@(Model.Pago?.TipoPago ?? "-")</strong></div>
+                <div><span>Estado Pago</span><strong>@(Model.Pago?.EstadoPago ?? "-")</strong></div>
+                <div><span>Repartidor</span><strong>@(Model.NombreRepartidor ?? "Sin asignar")</strong></div>
+            </div>
+        </div>
+
+        <div class="card-detail mt-3">
+            <h5 class="card-detail-title">Actualizar Estado</h5>
+            <form asp-action="ActualizarEstado" asp-route-id="@Model.PedidoId" method="post" class="d-flex gap-2">
+                <select name="estado" class="form-select" style="background:var(--bg-elevated);border-color:var(--border-color);color:var(--text-primary);border-radius:10px;">
+                    @foreach (var e in estados)
+                    {
+                        <option value="@e" selected="@(e == Model.Estado)">@e</option>
+                    }
+                </select>
+                <button type="submit" class="btn btn-primary btn-sm">Actualizar</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+}

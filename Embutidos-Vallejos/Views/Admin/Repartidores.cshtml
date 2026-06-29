@@ -1,0 +1,226 @@
+@model List<Embutidos_Vallejos.Models.DTOs.RepartidorDto>
+@{
+    ViewData["Title"] = "Gestion de Repartidores";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="admin-title">Repartidores</h1>
+        <p class="admin-subtitle">Gestion del equipo de reparto</p>
+    </div>
+    <button type="button" class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#createModal">
+        <i class="fa-solid fa-plus me-2"></i> Nuevo Repartidor
+    </button>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert-custom alert-success-custom">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert-custom alert-error-custom">@TempData["Error"]</div>
+}
+
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="mini-stat">
+            <span class="mini-stat-label">Totales</span>
+            <span class="mini-stat-value">@Model.Count</span>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="mini-stat">
+            <span class="mini-stat-label">Disponibles</span>
+            <span class="mini-stat-value text-success">@Model.Count(r => r.Estado == "Disponible")</span>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="mini-stat">
+            <span class="mini-stat-label">Ocupados</span>
+            <span class="mini-stat-value text-warning">@Model.Count(r => r.Estado == "Ocupado")</span>
+        </div>
+    </div>
+</div>
+
+<div class="table-container">
+    <table class="table-custom">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Telefono</th>
+                <th>Vehiculo</th>
+                <th>Estado</th>
+                <th>Pedidos</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var r in Model)
+            {
+                <tr>
+                    <td>@r.RepartidorId</td>
+                    <td><strong>@r.Nombre @r.Apellido</strong></td>
+                    <td>@(r.Email ?? "-")</td>
+                    <td>@(r.Telefono ?? "-")</td>
+                    <td>@(r.PlacaVehiculo ?? "-")</td>
+                    <td>
+                        @if (r.Estado == "Disponible")
+                        {
+                            <span class="badge-status status-active">Disponible</span>
+                        }
+                        else if (r.Estado == "Ocupado")
+                        {
+                            <span class="badge-status status-warning">Ocupado</span>
+                        }
+                        else
+                        {
+                            <span class="badge-status status-inactive">@r.Estado</span>
+                        }
+                    </td>
+                    <td>@r.PedidosAsignados</td>
+                    <td>
+                        <div class="action-btns">
+                            <button type="button" class="btn-icon btn-edit" title="Editar"
+                                    data-bs-toggle="modal" data-bs-target="#editModal-@r.RepartidorId">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <form asp-action="EliminarRepartidor" asp-route-id="@r.RepartidorId" method="post" class="d-inline"
+                                  onsubmit="return confirm('¿Eliminar repartidor @r.Nombre @r.Apellido?')">
+                                <button type="submit" class="btn-icon btn-delete" title="Eliminar">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- Edit Modal -->
+                <div class="modal fade" id="editModal-@r.RepartidorId" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content modal-dark">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Editar Repartidor</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <form asp-action="EditarRepartidor" asp-route-id="@r.RepartidorId" method="post">
+                                <div class="modal-body">
+                                    <div class="row g-3">
+                                        <div class="col-6">
+                                            <label class="form-label-custom">Nombre</label>
+                                            <input name="Nombre" class="form-control-custom" value="@r.Nombre" required />
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label-custom">Apellido</label>
+                                            <input name="Apellido" class="form-control-custom" value="@r.Apellido" required />
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label-custom">Email</label>
+                                            <input name="Email" type="email" class="form-control-custom" value="@r.Email" required />
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label-custom">Telefono</label>
+                                            <div class="input-group phone-wrapper">
+                                                <span class="phone-prefix">+591</span>
+                                                <input name="Telefono" class="form-control-custom phone-input" id="editRepTel-@r.RepartidorId" value="@r.Telefono" maxlength="12" />
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label-custom">Placa Vehiculo</label>
+                                            <input name="PlacaVehiculo" class="form-control-custom" value="@r.PlacaVehiculo" />
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label-custom">Estado</label>
+                                            <select name="Estado" class="form-control-custom">
+                                                <option value="Disponible" selected="@(r.Estado == "Disponible")">Disponible</option>
+                                                <option value="Ocupado" selected="@(r.Estado == "Ocupado")">Ocupado</option>
+                                                <option value="Inactivo" selected="@(r.Estado == "Inactivo")">Inactivo</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn-cancel" data-bs-dismiss="modal">Cancelar</button>
+                                    <button type="submit" class="btn-submit-sm">Guardar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Create Modal -->
+<div class="modal fade" id="createModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content modal-dark">
+            <div class="modal-header">
+                <h5 class="modal-title">Nuevo Repartidor</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="CrearRepartidor" method="post">
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label class="form-label-custom">Nombre</label>
+                            <input name="Nombre" class="form-control-custom" placeholder="Nombre" required />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label-custom">Apellido</label>
+                            <input name="Apellido" class="form-control-custom" placeholder="Apellido" required />
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label-custom">Email</label>
+                            <input name="Email" type="email" class="form-control-custom" placeholder="correo@empresa.com" required />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label-custom">Contraseña</label>
+                            <div class="input-group">
+                                <input name="Password" type="password" class="form-control-custom" id="createRepPwd" placeholder="Min. 6 caracteres" required />
+                                <button type="button" class="password-toggle-btn" onclick="togglePwd('createRepPwd','createRepPwdIcon')" style="right:12px;">
+                                    <i class="fa-regular fa-eye" id="createRepPwdIcon"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label-custom">Telefono</label>
+                            <div class="input-group phone-wrapper">
+                                <span class="phone-prefix">+591</span>
+                                <input name="Telefono" class="form-control-custom phone-input" id="createRepTel" placeholder="70000000" maxlength="12" />
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label-custom">Placa Vehiculo</label>
+                            <input name="PlacaVehiculo" class="form-control-custom" placeholder="Placa" />
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label-custom">Estado</label>
+                            <select name="Estado" class="form-control-custom">
+                                <option value="Disponible">Disponible</option>
+                                <option value="Ocupado">Ocupado</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn-submit-sm">Crear</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function(){
+            setupPhoneInput('createRepTel');
+            document.querySelectorAll('[id^="editRepTel-"]').forEach(function(el){ setupPhoneInput(el.id); });
+        });
+    </script>
+}

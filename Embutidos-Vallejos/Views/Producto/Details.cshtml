@@ -1,0 +1,114 @@
+@model Embutidos_Vallejos.Models.DTOs.ProductoDto
+@{
+    ViewData["Title"] = Model.Nombre;
+}
+
+<div class="container py-5">
+    <a asp-action="Index" class="btn-back-link mb-4 d-inline-block"><i class="fa-solid fa-arrow-left me-2"></i>Volver a productos</a>
+
+    <div class="row g-5">
+        <div class="col-md-5">
+            <div class="product-detail-img-wrapper">
+                <img src="@(Model.Imagen ?? "/img/LogoVallejos.png")" alt="@Model.Nombre" class="product-detail-img" />
+            </div>
+        </div>
+        <div class="col-md-7">
+            <span class="product-detail-category">@Model.NombreCategoria</span>
+            <h1 class="product-detail-title">@Model.Nombre</h1>
+            <p class="product-detail-price">@Model.PrecioVenta.ToString("C", new System.Globalization.CultureInfo("es-BO"))</p>
+
+            @if (!string.IsNullOrEmpty(Model.Descripcion))
+            {
+                <p class="product-detail-desc">@Model.Descripcion</p>
+            }
+
+            <div class="product-detail-meta">
+                <div class="meta-item">
+                    <span class="meta-label">Stock</span>
+                    <span class="meta-value @(Model.StockBajo ? "text-warning" : "")">
+                        @(Model.Stock > 0 ? $"{Model.Stock} unidades" : "Agotado")
+                    </span>
+                </div>
+            </div>
+
+            @if (Model.Stock > 0)
+            {
+                <div class="d-flex gap-3 mt-4">
+                    <div class="qty-selector">
+                        <button type="button" onclick="changeQty(-1)"><i class="fa-solid fa-minus"></i></button>
+                        <input type="number" id="detailQty" value="1" min="1" max="@Model.Stock" readonly />
+                        <button type="button" onclick="changeQty(1)"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                    <button class="btn-add-cart-detail" onclick="addToCart(@Model.ProductoId)">
+                        <i class="fa-solid fa-cart-plus"></i> Agregar al Carrito
+                    </button>
+                </div>
+            }
+            else
+            {
+                <button class="btn-disabled-detail mt-4" disabled>
+                    <i class="fa-solid fa-ban"></i> Producto Agotado
+                </button>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function changeQty(delta) {
+            const input = document.getElementById('detailQty');
+            let val = parseInt(input.value) + delta;
+            const max = parseInt(input.max);
+            if (val < 1) val = 1;
+            if (val > max) val = max;
+            input.value = val;
+        }
+
+        function addToCart(productoId) {
+            const qty = document.getElementById('detailQty').value;
+            const btn = document.querySelector('.btn-add-cart-detail');
+            const originalHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.style.opacity = '0.7';
+            fetch('@Url.Action("Agregar", "Carrito")', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `productoId=${productoId}&cantidad=${qty}`
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    btn.innerHTML = '<i class="fa-solid fa-check"></i> Agregado!';
+                    btn.style.background = 'linear-gradient(135deg, #16a34a 0%, #22c55e 100%)';
+                    btn.style.opacity = '1';
+                    setTimeout(() => {
+                        btn.innerHTML = originalHtml;
+                        btn.style.background = '';
+                        btn.style.opacity = '';
+                        btn.disabled = false;
+                    }, 1800);
+                    updateCartCount();
+                } else {
+                    alert(data.message);
+                    btn.innerHTML = originalHtml;
+                    btn.style.opacity = '';
+                    btn.disabled = false;
+                }
+            });
+        }
+
+        function updateCartCount() {
+            fetch('@Url.Action("ObtenerConteo", "Carrito")')
+                .then(r => r.json())
+                .then(data => {
+                    const badge = document.getElementById('cart-count');
+                    if (badge) {
+                        badge.textContent = data.count;
+                        badge.style.display = data.count > 0 ? 'flex' : 'none';
+                    }
+                });
+        }
+    </script>
+
+}

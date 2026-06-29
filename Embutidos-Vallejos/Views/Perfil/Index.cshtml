@@ -1,0 +1,70 @@
+@model Embutidos_Vallejos.Models.DTOs.PerfilDto
+@{
+    ViewData["Title"] = "Mi Perfil";
+    var initials = $"{Model.Nombre[..1]}{Model.Apellido[..1]}";
+}
+
+<div class="perfil-container">
+    <div class="perfil-card">
+        <div class="perfil-card-header">
+            <div class="perfil-avatar">
+                <i class="fa-solid fa-user"></i>
+            </div>
+            <h1>@Model.Nombre @Model.Apellido</h1>
+            <p class="perfil-role">
+                @if (Model.UserType == "Cliente")
+                {
+                    <span class="badge-role badge-cliente"><i class="fa-regular fa-user"></i> Cliente</span>
+                }
+                else
+                {
+                    <span class="badge-role badge-empleado"><i class="fa-regular fa-briefcase"></i> @Model.RolNombre</span>
+                }
+            </p>
+        </div>
+
+        @if (TempData["PerfilMensaje"] is string mensaje)
+        {
+            <div class="perfil-alert perfil-alert-success">
+                <i class="fa-regular fa-circle-check"></i> @mensaje
+            </div>
+        }
+
+        <div class="perfil-body">
+            <div class="perfil-grid">
+                <div class="perfil-field">
+                    <div class="perfil-field-label"><i class="fa-regular fa-user"></i> Nombre</div>
+                    <p class="perfil-field-value">@Model.Nombre</p>
+                </div>
+                <div class="perfil-field">
+                    <div class="perfil-field-label"><i class="fa-regular fa-user"></i> Apellido</div>
+                    <p class="perfil-field-value">@Model.Apellido</p>
+                </div>
+                <div class="perfil-field">
+                    <div class="perfil-field-label"><i class="fa-regular fa-envelope"></i> Correo electronico</div>
+                    <p class="perfil-field-value">@Model.Email</p>
+                </div>
+                <div class="perfil-field">
+                    <div class="perfil-field-label"><i class="fa-regular fa-phone"></i> Telefono</div>
+                    <p class="perfil-field-value">@if (!string.IsNullOrEmpty(Model.Telefono)) { <span>@Model.Telefono</span> } else { <span class="placeholder">No registrado</span> }</p>
+                </div>
+                @if (Model.UserType == "Cliente")
+                {
+                    <div class="perfil-field perfil-grid-single">
+                        <div class="perfil-field-label"><i class="fa-regular fa-location-dot"></i> Direccion</div>
+                        <p class="perfil-field-value">@if (!string.IsNullOrEmpty(Model.Direccion)) { <span>@Model.Direccion</span> } else { <span class="placeholder">No registrada</span> }</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="perfil-card-footer">
+            <a asp-action="Editar" class="perfil-btn perfil-btn-primary">
+                <i class="fa-regular fa-pen-to-square"></i> Editar datos
+            </a>
+            <a asp-action="CambiarPassword" class="perfil-btn perfil-btn-secondary">
+                <i class="fa-regular fa-key"></i> Cambiar contrasena
+            </a>
+        </div>
+    </div>
+</div>

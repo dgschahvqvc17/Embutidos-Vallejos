@@ -1,0 +1,181 @@
+@model List<Embutidos_Vallejos.Models.DTOs.ProductoDto>
+@{
+    ViewData["Title"] = "Producción - Productos";
+    var categorias = ViewBag.Categorias as List<Embutidos_Vallejos.Models.DTOs.CategoriaDto> ?? new();
+}
+
+<div class="page-header">
+    <h1 class="page-title"><i class="fa-solid fa-industry me-2"></i> Producción</h1>
+    <p class="page-subtitle">Gestiona la producción, precios y disponibilidad de embutidos</p>
+</div>
+
+@if (TempData["Success"] is string success)
+{
+    <div class="alert-custom alert-success-custom alert-dismissible fade show" role="alert">@success<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+}
+@if (TempData["Error"] is string err)
+{
+    <div class="alert-custom alert-error-custom alert-dismissible fade show" role="alert">@err<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+}
+
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="mini-stat">
+            <span class="mini-stat-label">Total Productos</span>
+            <span class="mini-stat-value">@Model.Count</span>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="mini-stat">
+            <span class="mini-stat-label">Activos</span>
+            <span class="mini-stat-value text-success">@Model.Count(p => p.Estado == "Activo")</span>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="mini-stat">
+            <span class="mini-stat-label">Stock Total</span>
+            <span class="mini-stat-value">@Model.Sum(p => p.Stock)</span>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="mini-stat">
+            <span class="mini-stat-label">Costo Producción</span>
+            <span class="mini-stat-value text-info" style="font-size:20px;">Bs @Model.Sum(p => p.Stock * p.PrecioProduccion).ToString("N0")</span>
+        </div>
+    </div>
+</div>
+
+<div class="filtros-bar mb-4">
+    <form method="get" class="d-flex gap-3 flex-wrap align-items-center">
+        <div class="filtro-group">
+            <i class="fa-solid fa-magnifying-glass filtro-icon"></i>
+            <input type="text" name="search" class="filtro-input" placeholder="Buscar producto..." value="@ViewBag.Search" />
+        </div>
+        <select name="categoriaId" class="filtro-select" onchange="this.form.submit()">
+            <option value="">Todas las categorías</option>
+            @foreach (var c in categorias)
+            {
+                <option value="@c.CategoriaId" selected="@(ViewBag.CategoriaId?.ToString() == c.CategoriaId.ToString())">@c.Nombre</option>
+            }
+        </select>
+        <a asp-action="Index" class="btn-filtro-clear" title="Limpiar filtros"><i class="fa-solid fa-xmark"></i></a>
+    </form>
+</div>
+
+<div class="table-container">
+    <table class="table-custom" id="produccionTable">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Categoría</th>
+                <th>Stock</th>
+                <th>P. Producción</th>
+                <th>P. Venta</th>
+                <th>Estado</th>
+                <th>Registrar Prod.</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in Model)
+            {
+                <tr class="@(p.StockBajo ? "row-stock-bajo" : "")">
+                    <td>
+                        <strong>@p.Nombre</strong>
+                        <button type="button" class="btn-edit-desc" title="Editar descripción" onclick="toggleDesc(@p.ProductoId)">
+                            <i class="fa-regular fa-pen-to-square"></i>
+                        </button>
+                        <form asp-action="ActualizarDescripcion" asp-route-id="@p.ProductoId" method="post" class="desc-form" id="descForm-@p.ProductoId" style="display:none;">
+                            <div class="d-flex gap-1 mt-1">
+                                <input type="text" name="descripcion" class="form-control-custom-xs" value="@p.Descripcion" placeholder="Sin descripción" />
+                                <button type="submit" class="btn-save-xs"><i class="fa-solid fa-check"></i></button>
+                            </div>
+                        </form>
+                    </td>
+                    <td>@p.NombreCategoria</td>
+                    <td>
+                        <span class="@(p.StockBajo ? "text-warning fw-bold" : "")">@p.Stock</span>
+                        @if (p.StockBajo)
+                        {
+                            <i class="fa-solid fa-triangle-exclamation text-warning ms-1" title="Stock bajo"></i>
+                        }
+                    </td>
+                    <td>
+                        <form asp-action="ActualizarPrecios" asp-route-id="@p.ProductoId" method="post" class="d-flex gap-1 align-items-center" style="max-width:200px;">
+                            <div class="precio-group">
+                                <span class="precio-simbolo">Bs</span>
+                                <input type="number" name="precioProduccion" class="precio-input" value="@p.PrecioProduccion.ToString("F2")" step="0.01" min="0.01" />
+                            </div>
+                            <input type="hidden" name="precioVenta" value="@p.PrecioVenta" />
+                            <button type="submit" class="btn-save-xs" title="Guardar precio producción"><i class="fa-solid fa-check"></i></button>
+                        </form>
+                    </td>
+                    <td>
+                        <form asp-action="ActualizarPrecios" asp-route-id="@p.ProductoId" method="post" class="d-flex gap-1 align-items-center" style="max-width:200px;">
+                            <input type="hidden" name="precioProduccion" value="@p.PrecioProduccion" />
+                            <div class="precio-group">
+                                <span class="precio-simbolo">Bs</span>
+                                <input type="number" name="precioVenta" class="precio-input" value="@p.PrecioVenta.ToString("F2")" step="0.01" min="0.01" />
+                            </div>
+                            <button type="submit" class="btn-save-xs" title="Guardar precio venta"><i class="fa-solid fa-check"></i></button>
+                        </form>
+                    </td>
+                    <td>
+                        @if (p.Estado == "Activo")
+                        {
+                            <span class="badge-status status-active">Activo</span>
+                        }
+                        else
+                        {
+                            <span class="badge-status status-inactive">Inactivo</span>
+                        }
+                    </td>
+                    <td>
+                        <form asp-action="RegistrarProduccion" asp-route-id="@p.ProductoId" method="post" class="d-flex gap-1 align-items-center" style="max-width:160px;">
+                            <button type="button" class="btn-stock btn-stock-minus prod-btn-adjust" data-target="prodInput-@p.ProductoId" data-amount="-1">&minus;</button>
+                            <input type="number" name="cantidadProducida" class="stock-input" id="prodInput-@p.ProductoId" value="0" min="1" />
+                            <button type="button" class="btn-stock btn-stock-plus prod-btn-adjust" data-target="prodInput-@p.ProductoId" data-amount="1">+</button>
+                            <button type="submit" class="btn-prod-save" title="Registrar producción">
+                                <i class="fa-solid fa-flask"></i>
+                            </button>
+                        </form>
+                    </td>
+                    <td>
+                        <form asp-action="ToggleEstado" asp-route-id="@p.ProductoId" method="post">
+                            <button type="submit" class="btn-icon @(p.Estado == "Activo" ? "btn-deactivate" : "btn-activate")" title="@(p.Estado == "Activo" ? "Desactivar" : "Activar")">
+                                <i class="fa-solid @(p.Estado == "Activo" ? "fa-toggle-on" : "fa-toggle-off")"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            @if (!Model.Any())
+            {
+                <tr><td colspan="8" class="text-center py-4 text-secondary">No hay productos.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+
+    <script>
+        document.querySelectorAll('.prod-btn-adjust').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var targetId = this.getAttribute('data-target');
+                var amount = parseInt(this.getAttribute('data-amount'));
+                var input = document.getElementById(targetId);
+                if (input) {
+                    var val = parseInt(input.value) || 0;
+                    var newVal = val + amount;
+                    if (newVal >= 1) input.value = newVal;
+                }
+            });
+        });
+
+        function toggleDesc(id) {
+            var form = document.getElementById('descForm-' + id);
+            form.style.display = form.style.display === 'none' ? 'flex' : 'none';
+        }
+    </script>
+}
