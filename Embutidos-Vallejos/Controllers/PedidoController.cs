@@ -95,6 +95,11 @@ public class PedidoController : Controller
                 return Json(new { success = true, redirect = Url.Action("QR", "Pago", new { pedidoId = pedido.PedidoId }) });
             }
 
+            if (tipoPago == "Stripe")
+            {
+                return Json(new { success = true, redirect = Url.Action("Stripe", "Pago", new { pedidoId = pedido.PedidoId }) });
+            }
+
             return Json(new { success = true, redirect = Url.Action("Details", new { id = pedido.PedidoId }) });
         }
         catch (Exception ex)

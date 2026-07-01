@@ -1,4 +1,4 @@
-﻿@model Embutidos_Vallejos.Models.DTOs.DashboardDto?
+@model Embutidos_Vallejos.Models.DTOs.DashboardDto?
 @{
     ViewData["Title"] = "Inicio";
     ViewData["FullWidth"] = true;
@@ -13,7 +13,7 @@
     <div class="home-hero">
         <div class="home-hero-content">
             <h1 class="home-hero-title animate-in">
-                <span class="home-hero-brand-name">Embutidos Vallejos</span>
+                <span class="home-hero-brand-name glow-text">Embutidos Vallejos</span>
             </h1>
             <p class="home-hero-subtitle animate-in animate-in-delay-1">
                 Tradicion y calidad en cada bocado. Descubre nuestra amplia seleccion de embutidos
@@ -23,16 +23,16 @@
             <div class="home-hero-btns animate-in animate-in-delay-2">
                 @if (User.Identity?.IsAuthenticated != true)
                 {
-                    <a asp-controller="Account" asp-action="Login" class="home-btn-primary">
+                    <a asp-controller="Account" asp-action="Login" class="btn-premium home-btn-primary">
                         <i class="fa-regular fa-arrow-right-to-bracket"></i> Iniciar Sesion
                     </a>
-                    <a asp-controller="Account" asp-action="Register" class="home-btn-secondary">
+                    <a asp-controller="Account" asp-action="Register" class="btn-premium btn-premium-accent home-btn-secondary">
                         <i class="fa-regular fa-user-plus"></i> Crear Cuenta
                     </a>
                 }
                 else
                 {
-                    <a asp-controller="Producto" asp-action="Index" class="home-btn-primary">
+                    <a asp-controller="Producto" asp-action="Index" class="btn-premium home-btn-primary">
                         <i class="fa-solid fa-store"></i> Ver Productos
                     </a>
                 }
@@ -57,7 +57,7 @@
             </p>
 
             <div class="home-about-grid">
-                <div class="home-about-card animate-in animate-in-delay-1">
+                <div class="home-about-card glass-panel glow-border animate-in animate-in-delay-1">
                     <div class="home-card-icon home-card-icon-red">
                         <i class="fa-solid fa-bullseye"></i>
                     </div>
@@ -68,7 +68,7 @@
                         de nuestros clientes en Cochabamba y todo el país.
                     </p>
                 </div>
-                <div class="home-about-card animate-in animate-in-delay-2">
+                <div class="home-about-card glass-panel glow-border animate-in animate-in-delay-2">
                     <div class="home-card-icon home-card-icon-gold">
                         <i class="fa-solid fa-eye"></i>
                     </div>
@@ -79,7 +79,7 @@
                         expandiendo nuestro alcance a nuevos mercados internacionales.
                     </p>
                 </div>
-                <div class="home-about-card animate-in animate-in-delay-3">
+                <div class="home-about-card glass-panel glow-border animate-in animate-in-delay-3">
                     <div class="home-card-icon home-card-icon-green">
                         <i class="fa-solid fa-handshake"></i>
                     </div>
@@ -102,28 +102,28 @@
                 <div class="home-about-divider"></div>
                 <div class="row g-4 mt-4">
                     <div class="col-md-3 col-6 animate-in animate-in-delay-1">
-                        <div class="card-dashboard">
+                        <div class="card-dashboard glass-panel glow-border">
                             <div class="icon icon-red"><i class="fa-solid fa-cubes"></i></div>
                             <h3>@Model.TotalProductos</h3>
                             <p>Productos</p>
                         </div>
                     </div>
                     <div class="col-md-3 col-6 animate-in animate-in-delay-2">
-                        <div class="card-dashboard">
+                        <div class="card-dashboard glass-panel glow-border">
                             <div class="icon icon-gold"><i class="fa-solid fa-truck"></i></div>
                             <h3>@Model.TotalPedidos</h3>
                             <p>Pedidos</p>
                         </div>
                     </div>
                     <div class="col-md-3 col-6 animate-in animate-in-delay-3">
-                        <div class="card-dashboard">
+                        <div class="card-dashboard glass-panel glow-border">
                             <div class="icon icon-green"><i class="fa-solid fa-check-circle"></i></div>
                             <h3>@Model.PedidosEntregados</h3>
                             <p>Entregados</p>
                         </div>
                     </div>
                     <div class="col-md-3 col-6 animate-in animate-in-delay-4">
-                        <div class="card-dashboard">
+                        <div class="card-dashboard glass-panel glow-border">
                             <div class="icon icon-blue"><i class="fa-solid fa-users"></i></div>
                             <h3>@Model.TotalClientes</h3>
                             <p>Clientes</p>

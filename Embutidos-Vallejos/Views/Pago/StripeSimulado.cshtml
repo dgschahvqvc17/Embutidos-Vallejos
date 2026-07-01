@@ -1,0 +1,163 @@
+@model Embutidos_Vallejos.Models.DTOs.PedidoDto
+@{
+    ViewData["Title"] = "Pago con Tarjeta - Stripe Simulado";
+    var publishableKey = ViewBag.PublishableKey as string;
+}
+
+<div class="stripe-sim-container">
+    <div class="stripe-sim-card glass-panel glow-border animate-fade-up" style="max-width:480px; margin:0 auto; padding:40px 36px; border-radius:var(--radius-lg);">
+        <div class="stripe-sim-header" style="text-align:center; margin-bottom:28px;">
+            <div class="stripe-logo" style="margin-bottom:12px;">
+                <i class="fa-brands fa-stripe fa-4x" style="color: #635bff;"></i>
+            </div>
+            <div class="stripe-sim-badge glass-panel-light" style="display:inline-block; padding:3px 14px; border-radius:20px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:#635bff; margin-bottom:14px;">Modo Prueba</div>
+            <h2 class="stripe-title" style="font-family:var(--font-display); font-size:26px; font-weight:900; margin:0 0 6px;">Completar Pago</h2>
+            <p class="stripe-amount" style="font-size:36px; font-weight:800; color:var(--accent); margin:0 0 4px; text-shadow: 0 0 20px rgba(201,169,78,0.35);">@Model.Total.ToString("C", new System.Globalization.CultureInfo("es-BO"))</p>
+            <p class="stripe-subtitle" style="color:var(--text-muted); font-size:12px; margin:0;">Pedido #@Model.PedidoId.ToString("D6")</p>
+        </div>
+
+        <form id="stripeSimForm" asp-action="ConfirmarPagoStripeSimulado" method="post" onsubmit="procesarPago(event)">
+            <input type="hidden" name="pedidoId" value="@Model.PedidoId" />
+            
+            <div class="stripe-form-group" style="margin-bottom:16px;">
+                <label class="stripe-label" style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:rgba(232,232,238,0.6); margin-bottom:6px; display:block;">Correo Electrónico</label>
+                <input type="email" class="stripe-input glass-input" value="@User.Identity?.Name" readonly style="width:100%; padding:12px 14px; border-radius:var(--radius-sm); font-size:14px; color:var(--text-primary);" />
+            </div>
+
+            <div class="stripe-form-group" style="margin-bottom:16px;">
+                <label class="stripe-label" style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:rgba(232,232,238,0.6); margin-bottom:6px; display:block;">Información de la Tarjeta</label>
+                <div class="stripe-card-input-wrapper glass-input" style="border-radius:var(--radius-sm); overflow:hidden; padding:0;">
+                    <div class="stripe-card-number-row" style="display:flex; align-items:center; padding:12px 14px; border-bottom:1px solid rgba(255,255,255,0.06);">
+                        <i class="fa-regular fa-credit-card stripe-card-icon" id="cardBrandIcon" style="color:rgba(255,255,255,0.4); margin-right:12px; font-size:18px;"></i>
+                        <input type="text" id="cardNumber" name="numeroTarjeta" placeholder="1234 5678 1234 5678" maxlength="19" required style="flex:1; background:transparent; border:none; outline:none; color:var(--text-primary); font-size:15px; letter-spacing:1px;" />
+                    </div>
+                    <div class="stripe-card-details-row" style="display:grid; grid-template-columns:1fr 1fr;">
+                        <input type="text" id="cardExpiry" placeholder="MM / AA" maxlength="7" required style="padding:12px 14px; background:transparent; border:none; border-right:1px solid rgba(255,255,255,0.06); outline:none; color:var(--text-primary); font-size:14px;" />
+                        <input type="text" id="cardCvc" placeholder="CVC" maxlength="4" required style="padding:12px 14px; background:transparent; border:none; outline:none; color:var(--text-primary); font-size:14px;" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="stripe-form-group" style="margin-bottom:16px;">
+                <label class="stripe-label" style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:rgba(232,232,238,0.6); margin-bottom:6px; display:block;">Nombre en la Tarjeta</label>
+                <input type="text" class="stripe-input glass-input" placeholder="Juan Pérez" required style="width:100%; padding:12px 14px; border-radius:var(--radius-sm); font-size:14px; color:var(--text-primary);" />
+            </div>
+
+            <div class="stripe-form-group" style="margin-bottom:20px;">
+                <label class="stripe-label" style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:rgba(232,232,238,0.6); margin-bottom:6px; display:block;">País o Región</label>
+                <select class="stripe-input glass-input" style="width:100%; padding:12px 14px; border-radius:var(--radius-sm); font-size:14px; color:var(--text-primary); cursor:pointer;">
+                    <option value="BO">Bolivia</option>
+                    <option value="US">Estados Unidos</option>
+                    <option value="AR">Argentina</option>
+                    <option value="CL">Chile</option>
+                </select>
+            </div>
+
+            <div class="stripe-info-box" style="background:rgba(99,91,255,0.08); border:1px solid rgba(99,91,255,0.2); border-radius:var(--radius-sm); padding:12px 14px; margin-bottom:20px; display:flex; gap:10px; font-size:12px; color:rgba(232,232,238,0.7); align-items:flex-start;">
+                <i class="fa-solid fa-circle-info" style="color:#635bff; font-size:14px; margin-top:1px; flex-shrink:0;"></i>
+                <div>
+                    <strong style="color:var(--text-primary);">Simulación Activa:</strong> Usa la tarjeta de prueba <code style="background:rgba(99,91,255,0.15); color:#a5a0ff; padding:1px 6px; border-radius:4px;">4242 4242 4242 4242</code> con cualquier fecha futura y CVC.
+                </div>
+            </div>
+
+            <button type="submit" class="btn-stripe-pay" id="payBtn" style="background: linear-gradient(135deg, #635bff, #4f46e5); border:none; border-radius:var(--radius-sm); color:#fff; font-size:15px; font-weight:700; padding:14px; width:100%; cursor:pointer; transition:all 0.3s ease; display:flex; align-items:center; justify-content:center; gap:8px; letter-spacing:0.5px;">
+                <i class="fa-solid fa-lock"></i> Pagar @Model.Total.ToString("C", new System.Globalization.CultureInfo("es-BO"))
+            </button>
+
+            <a asp-controller="Pedido" asp-action="Details" asp-route-id="@Model.PedidoId" class="btn-stripe-cancel" style="display:block; text-align:center; margin-top:14px; font-size:12px; color:var(--text-muted); text-decoration:none; transition:color 0.2s;">
+                Cancelar y regresar
+            </a>
+        </form>
+
+        <!-- Spinner & Processing Overlay -->
+        <div id="processingOverlay" class="stripe-overlay" style="display: none; position:absolute; inset:0; background:rgba(9,10,13,0.92); backdrop-filter:blur(8px); border-radius:var(--radius-lg); flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:40px;">
+            <div class="stripe-spinner-wrap">
+                <i class="fa-solid fa-circle-notch fa-spin fa-3x" style="color: #635bff;"></i>
+                <h4 class="mt-3" style="color:var(--text-primary); font-family:var(--font-display); font-size:20px;">Procesando pago seguro...</h4>
+                <p style="color:var(--text-muted); margin-top:8px; font-size:13px;" id="statusMessage">Conectando con servidores de Stripe...</p>
+                <div class="stripe-progress-bar" style="background:rgba(255,255,255,0.08); height:5px; border-radius:3px; margin-top:20px; overflow:hidden; width:280px;">
+                    <div class="stripe-progress-fill" id="progressFill" style="background:linear-gradient(90deg,#635bff,#a5a0ff); height:100%; width:0%; transition:width 0.4s ease; border-radius:3px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Formatear número de tarjeta con espacios cada 4 dígitos
+        const cardNumberInput = document.getElementById('cardNumber');
+        cardNumberInput.addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+            let formattedValue = '';
+            for (let i = 0; i < value.length; i++) {
+                if (i > 0 && i % 4 === 0) {
+                    formattedValue += ' ';
+                }
+                formattedValue += value[i];
+            }
+            e.target.value = formattedValue;
+
+            // Detectar marca de tarjeta
+            const icon = document.getElementById('cardBrandIcon');
+            if (value.startsWith('4')) {
+                icon.className = 'fa-brands fa-cc-visa stripe-card-icon text-primary';
+            } else if (value.startsWith('5')) {
+                icon.className = 'fa-brands fa-cc-mastercard stripe-card-icon text-warning';
+            } else if (value.startsWith('3')) {
+                icon.className = 'fa-brands fa-cc-amex stripe-card-icon text-info';
+            } else {
+                icon.className = 'fa-regular fa-credit-card stripe-card-icon';
+            }
+        });
+
+        // Formatear fecha de expiración MM / AA
+        const cardExpiryInput = document.getElementById('cardExpiry');
+        cardExpiryInput.addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+            if (value.length > 2) {
+                e.target.value = value.substring(0, 2) + ' / ' + value.substring(2, 4);
+            } else {
+                e.target.value = value;
+            }
+        });
+
+        // Formatear CVC
+        const cardCvcInput = document.getElementById('cardCvc');
+        cardCvcInput.addEventListener('input', function (e) {
+            e.target.value = e.target.value.replace(/[^0-9]/gi, '');
+        });
+
+        // Simular procesamiento del pago
+        function procesarPago(event) {
+            event.preventDefault();
+            
+            const btn = document.getElementById('payBtn');
+            const overlay = document.getElementById('processingOverlay');
+            const statusMsg = document.getElementById('statusMessage');
+            const progressFill = document.getElementById('progressFill');
+
+            btn.disabled = true;
+            overlay.style.display = 'flex';
+
+            const stages = [
+                { time: 800, progress: '30%', msg: 'Validando credenciales de tarjeta...' },
+                { time: 1600, progress: '65%', msg: 'Autorizando transacción con el banco emisor...' },
+                { time: 2400, progress: '90%', msg: 'Registrando pago en la pasarela de Stripe...' },
+                { time: 3000, progress: '100%', msg: '¡Pago completado con éxito!' }
+            ];
+
+            stages.forEach(stage => {
+                setTimeout(() => {
+                    statusMsg.textContent = stage.msg;
+                    progressFill.style.width = stage.progress;
+                    if (stage.progress === '100%') {
+                        setTimeout(() => {
+                            document.getElementById('stripeSimForm').submit();
+                        }, 500);
+                    }
+                }, stage.time);
+            });
+        }
+    </script>
+}

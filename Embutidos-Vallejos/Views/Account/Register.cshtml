@@ -13,6 +13,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <style>
         :root { --primary: #7A1F2A; --accent: #C9A94E; --bg-body: #0B0C10; --bg-card: #15161C; --bg-input: #1E1F28; --border-color: #262838; --text-primary: #E8E8EE; --text-muted: #55566A; --danger: #FF1744; --font-display: 'Playfair Display', serif; --font-body: 'Inter', sans-serif; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -23,22 +24,21 @@
         .back-home a { display: inline-flex; align-items: center; gap: 6px; color: rgba(232,232,238,0.5); text-decoration: none; font-size: 13px; font-weight: 500; padding: 8px 16px; border-radius: 6px; background: rgba(21,22,28,0.6); border: 1px solid rgba(38,40,56,0.5); backdrop-filter: blur(10px); transition: all 0.25s ease; }
         .back-home a:hover { color: var(--accent); border-color: var(--accent); transform: translateX(-3px); }
         .register-container { width: 100%; max-width: 500px; padding: 20px; position: relative; z-index: 1; }
-        .register-card { background: rgba(21,22,28,0.85); border: 1px solid rgba(38,40,56,0.6); border-radius: 12px; padding: 34px 32px 28px; backdrop-filter: blur(20px); }
-        .logo-section { text-align: center; margin-bottom: 24px; }
-        .logo-title { font-family: var(--font-display); font-weight: 900; font-size: 22px; color: var(--text-primary); letter-spacing: -0.3px; }
+        .register-card { padding: 38px 36px 32px; border-radius: var(--radius-lg); }
+        .logo-section { text-align: center; margin-bottom: 28px; }
+        .logo-title { font-family: var(--font-display); font-weight: 900; font-size: 26px; color: var(--text-primary); letter-spacing: -0.3px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
         .logo-title span { color: var(--accent); }
-        .logo-subtitle { color: rgba(232,232,238,0.35); font-size: 10px; letter-spacing: 3px; text-transform: uppercase; margin-top: 4px; }
-        .form-label { color: rgba(232,232,238,0.4); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
-        .form-control { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; padding: 10px 12px; padding-left: 40px; color: #ffffff; font-size: 15px; transition: all 0.25s ease; height: 44px; width: 100%; }
-        .form-control:focus { background: rgba(255,255,255,0.08); border-color: var(--accent); box-shadow: 0 0 0 2px rgba(201,169,78,0.15); outline: none; color: #ffffff; }
-        .form-control::placeholder { color: rgba(255,255,255,0.25); }
+        .logo-subtitle { color: rgba(232,232,238,0.5); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; margin-top: 6px; font-weight: 600; }
+        .form-label { color: rgba(232,232,238,0.6); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+        .form-control { padding: 12px 14px; padding-left: 44px; font-size: 15px; height: 48px; border-radius: var(--radius-sm); }
+        .form-control::placeholder { color: rgba(255,255,255,0.3); }
         .form-control:-webkit-autofill, .form-control:-webkit-autofill:hover, .form-control:-webkit-autofill:focus { -webkit-text-fill-color: #ffffff !important; -webkit-box-shadow: 0 0 0px 1000px rgba(42,44,58,0.9) inset !important; transition: background-color 5000s ease-in-out 0s; caret-color: #ffffff; }
         .input-group { position: relative; }
-        .input-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.25); font-size: 14px; z-index: 4; pointer-events: none; }
-        .toggle-password { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.25); background: none; border: none; cursor: pointer; font-size: 14px; padding: 6px; z-index: 4; transition: color 0.2s; }
-        .toggle-password:hover { color: rgba(255,255,255,0.5); }
-        .btn-register { background: var(--primary); border: 1px solid var(--primary); border-radius: 6px; padding: 12px; font-size: 14px; font-weight: 600; color: #fff; width: 100%; transition: all 0.25s ease; letter-spacing: 0.3px; cursor: pointer; }
-        .btn-register:hover { background: #8E2633; border-color: #8E2633; }
+        .input-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.4); font-size: 15px; z-index: 4; pointer-events: none; transition: color 0.3s; }
+        .form-control:focus ~ .input-icon, .form-control:focus + .input-icon { color: var(--accent); }
+        .toggle-password { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.4); background: none; border: none; cursor: pointer; font-size: 15px; padding: 6px; z-index: 4; transition: color 0.2s; }
+        .toggle-password:hover { color: var(--accent); }
+        .btn-register { width: 100%; margin-top: 8px; font-size: 15px; padding: 14px; }
         .text-validation { color: var(--danger); font-size: 11px; margin-top: 2px; display: block; }
         .alert-danger { background: rgba(255,23,68,0.08); border: 1px solid rgba(255,23,68,0.15); border-radius: 6px; color: var(--danger); font-size: 12px; padding: 10px 14px; margin-bottom: 16px; }
         .alert-danger ul { list-style: none; padding: 0; margin: 0; }
@@ -63,10 +63,10 @@
     <div class="back-home">
         <a asp-controller="Home" asp-action="Index"><i class="fa-solid fa-arrow-left"></i> Volver al inicio</a>
     </div>
-    <div class="register-container">
-        <div class="register-card">
+    <div class="register-container animate-fade-up">
+        <div class="register-card glass-panel glow-border">
             <div class="logo-section">
-                <div class="logo-title">Crear <span>Cuenta</span></div>
+                <div class="logo-title">Crear <span class="glow-text">Cuenta</span></div>
                 <div class="logo-subtitle">Embutidos Vallejos</div>
             </div>
 
@@ -80,16 +80,16 @@
                     <div class="col-md-6 row-fields">
                         <label asp-for="Nombre" class="form-label"><i class="fa-regular fa-user me-1"></i> @Html.DisplayNameFor(m => m.Nombre)</label>
                         <div class="input-group">
+                            <input asp-for="Nombre" class="form-control glass-input" placeholder="Tu nombre" />
                             <i class="fa-regular fa-user input-icon"></i>
-                            <input asp-for="Nombre" class="form-control" placeholder="Tu nombre" />
                         </div>
                         <span asp-validation-for="Nombre" class="text-validation"></span>
                     </div>
                     <div class="col-md-6 row-fields">
                         <label asp-for="Apellido" class="form-label"><i class="fa-regular fa-user me-1"></i> @Html.DisplayNameFor(m => m.Apellido)</label>
                         <div class="input-group">
+                            <input asp-for="Apellido" class="form-control glass-input" placeholder="Tu apellido" />
                             <i class="fa-regular fa-user input-icon"></i>
-                            <input asp-for="Apellido" class="form-control" placeholder="Tu apellido" />
                         </div>
                         <span asp-validation-for="Apellido" class="text-validation"></span>
                     </div>
@@ -98,9 +98,9 @@
                 <div class="row-fields">
                     <label asp-for="Telefono" class="form-label"><i class="fa-solid fa-phone me-1"></i> @Html.DisplayNameFor(m => m.Telefono)</label>
                     <div class="input-group phone-wrapper">
-                        <i class="fa-solid fa-phone input-icon"></i>
                         <span class="phone-prefix">+591</span>
-                        <input asp-for="Telefono" class="form-control phone-input" id="telefono" placeholder="70000000" maxlength="12" value="+591" />
+                        <input asp-for="Telefono" class="form-control glass-input phone-input" id="telefono" placeholder="70000000" maxlength="12" value="+591" />
+                        <i class="fa-solid fa-phone input-icon"></i>
                     </div>
                     <span asp-validation-for="Telefono" class="text-validation"></span>
                     <small style="color: rgba(232,232,238,0.3); font-size: 10px; margin-top: 2px; display: block;"><i class="fa-regular fa-circle-info me-1"></i> Ingresa 8 digitos despues de +591</small>
@@ -109,8 +109,8 @@
                 <div class="row-fields">
                     <label asp-for="Email" class="form-label"><i class="fa-regular fa-envelope me-1"></i> @Html.DisplayNameFor(m => m.Email)</label>
                     <div class="input-group">
+                        <input asp-for="Email" class="form-control glass-input" placeholder="tu@correo.com" />
                         <i class="fa-regular fa-envelope input-icon"></i>
-                        <input asp-for="Email" class="form-control" placeholder="tu@correo.com" />
                     </div>
                     <span asp-validation-for="Email" class="text-validation"></span>
                 </div>
@@ -118,8 +118,8 @@
                 <div class="row-fields">
                     <label asp-for="Direccion" class="form-label"><i class="fa-solid fa-location-dot me-1"></i> @Html.DisplayNameFor(m => m.Direccion)</label>
                     <div class="input-group">
+                        <input asp-for="Direccion" class="form-control glass-input" placeholder="Calle, ciudad, zona" />
                         <i class="fa-solid fa-location-dot input-icon"></i>
-                        <input asp-for="Direccion" class="form-control" placeholder="Calle, ciudad, zona" />
                     </div>
                     <span asp-validation-for="Direccion" class="text-validation"></span>
                 </div>
@@ -128,8 +128,8 @@
                     <div class="col-md-6 row-fields">
                         <label asp-for="Password" class="form-label"><i class="fa-solid fa-lock me-1"></i> @Html.DisplayNameFor(m => m.Password)</label>
                         <div class="input-group">
+                            <input asp-for="Password" class="form-control glass-input" id="password" placeholder="Min. 6 caracteres" />
                             <i class="fa-solid fa-lock input-icon"></i>
-                            <input asp-for="Password" class="form-control" id="password" placeholder="Min. 6 caracteres" />
                             <button type="button" class="toggle-password" onclick="togglePwd('password','toggleIcon1')"><i class="fa-regular fa-eye" id="toggleIcon1"></i></button>
                         </div>
                         <span asp-validation-for="Password" class="text-validation"></span>
@@ -137,15 +137,15 @@
                     <div class="col-md-6 row-fields">
                         <label asp-for="ConfirmPassword" class="form-label"><i class="fa-solid fa-lock me-1"></i> @Html.DisplayNameFor(m => m.ConfirmPassword)</label>
                         <div class="input-group">
+                            <input asp-for="ConfirmPassword" class="form-control glass-input" id="confirmPassword" placeholder="Repite la contrasena" />
                             <i class="fa-solid fa-lock input-icon"></i>
-                            <input asp-for="ConfirmPassword" class="form-control" id="confirmPassword" placeholder="Repite la contrasena" />
                             <button type="button" class="toggle-password" onclick="togglePwd('confirmPassword','toggleIcon2')"><i class="fa-regular fa-eye" id="toggleIcon2"></i></button>
                         </div>
                         <span asp-validation-for="ConfirmPassword" class="text-validation"></span>
                     </div>
                 </div>
 
-                <button type="submit" class="btn-register mt-2"><i class="fa-regular fa-user-plus me-2"></i> Crear Cuenta</button>
+                <button type="submit" class="btn-premium btn-register mt-2"><i class="fa-regular fa-user-plus me-2"></i> Crear Cuenta</button>
             </form>
 
             <div class="login-link">
