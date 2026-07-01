@@ -12,19 +12,25 @@ public class PagoController : Controller
     private readonly IPayPalService _payPalService;
     private readonly IQRService _qrService;
     private readonly IVentaService _ventaService;
+    private readonly IStripeService _stripeService;
+    private readonly IConfiguration _config;
 
     public PagoController(
         IPagoService pagoService,
         IPedidoService pedidoService,
         IPayPalService payPalService,
         IQRService qrService,
-        IVentaService ventaService)
+        IVentaService ventaService,
+        IStripeService stripeService,
+        IConfiguration config)
     {
         _pagoService = pagoService;
         _pedidoService = pedidoService;
         _payPalService = payPalService;
         _qrService = qrService;
         _ventaService = ventaService;
+        _stripeService = stripeService;
+        _config = config;
     }
 
     public async Task<IActionResult> PayPal(int pedidoId)
@@ -144,4 +150,90 @@ public class PagoController : Controller
 
         return View(receipt);
     }
+
+    public async Task<IActionResult> Stripe(int pedidoId)
+    {
+        var pedido = await _pedidoService.GetByIdAsync(pedidoId);
+        if (pedido == null) return NotFound();
+
+        var secretKey = _config["Stripe:SecretKey"];
+        if (string.IsNullOrEmpty(secretKey) || secretKey == "TU_SECRET_KEY_DE_STRIPE" || secretKey.StartsWith("TU_"))
+        {
+            return RedirectToAction(nameof(StripeSimulado), new { pedidoId });
+        }
+
+        try
+        {
+            var successUrl = (Url.Action("StripeSuccess", "Pago", new { pedidoId = pedidoId }, Request.Scheme) ?? "") + "&sessionId={CHECKOUT_SESSION_ID}";
+            var cancelUrl = Url.Action("StripeCancel", "Pago", new { pedidoId = pedidoId }, Request.Scheme) ?? "";
+
+            var sessionUrl = await _stripeService.CrearCheckoutSessionAsync(pedido, successUrl, cancelUrl);
+            return Redirect(sessionUrl);
+        }
+        catch (Exception ex)
+        {
+            TempData["Error"] = $"Error al conectar con Stripe: {ex.Message}. Redireccionando a simulación local...";
+            return RedirectToAction(nameof(StripeSimulado), new { pedidoId });
+        }
+    }
+
+    public async Task<IActionResult> StripeSimulado(int pedidoId)
+    {
+        var pedido = await _pedidoService.GetByIdAsync(pedidoId);
+        if (pedido == null) return NotFound();
+
+        ViewBag.PublishableKey = _config["Stripe:PublishableKey"];
+        return View(pedido);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> ConfirmarPagoStripeSimulado(int pedidoId, string numeroTarjeta)
+    {
+        var pedido = await _pedidoService.GetByIdAsync(pedidoId);
+        if (pedido == null) return NotFound();
+
+        var pago = await _pagoService.GetByPedidoIdAsync(pedidoId);
+        var mockTransactionId = $"ch_sim_{Guid.NewGuid().ToString("N").Substring(0, 16)}";
+        
+        if (pago != null)
+        {
+            await _pagoService.ConfirmarPagoAsync(pago.PagoId, mockTransactionId);
+        }
+
+        await _pedidoService.UpdateEstadoAsync(pedidoId, "Pagado");
+
+        TempData["Success"] = "Pago simulado con tarjeta procesado exitosamente.";
+        return RedirectToAction(nameof(Comprobante), new { pedidoId });
+    }
+
+    public async Task<IActionResult> StripeSuccess(int pedidoId, string sessionId)
+    {
+        var pedido = await _pedidoService.GetByIdAsync(pedidoId);
+        if (pedido == null) return NotFound();
+
+        var valid = await _stripeService.ValidarCheckoutSessionAsync(sessionId);
+        if (!valid)
+        {
+            TempData["Error"] = "No se pudo verificar el pago de Stripe.";
+            return RedirectToAction("Details", "Pedido", new { id = pedidoId });
+        }
+
+        var pago = await _pagoService.GetByPedidoIdAsync(pedidoId);
+        if (pago != null)
+        {
+            await _pagoService.ConfirmarPagoAsync(pago.PagoId, sessionId);
+        }
+
+        await _pedidoService.UpdateEstadoAsync(pedidoId, "Pagado");
+
+        TempData["Success"] = "Pago procesado y verificado exitosamente mediante Stripe.";
+        return RedirectToAction(nameof(Comprobante), new { pedidoId });
+    }
+
+    public IActionResult StripeCancel(int pedidoId)
+    {
+        TempData["Error"] = "El pago mediante Stripe fue cancelado por el usuario.";
+        return RedirectToAction("Details", "Pedido", new { id = pedidoId });
+    }
 }
+
