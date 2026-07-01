@@ -26,8 +26,8 @@
 <div class="row g-4">
     @foreach (var prod in Model)
     {
-        <div class="col-lg-3 col-md-4 col-6">
-            <div class="product-card" data-id="@prod.ProductoId">
+        <div class="col-lg-3 col-md-4 col-6 animate-fade-up">
+            <div class="product-card glass-panel glow-border" data-id="@prod.ProductoId">
                 <div class="product-img-wrapper">
                     <img src="@(prod.Imagen ?? "/img/LogoVallejos.png")" alt="@prod.Nombre" class="product-img" />
                     @if (prod.StockBajo && prod.Stock > 0)
@@ -41,7 +41,7 @@
                 </div>
                 <div class="product-info">
                     <span class="product-category">@prod.NombreCategoria</span>
-                    <h3 class="product-name">@prod.Nombre</h3>
+                    <h3 class="product-name glow-text">@prod.Nombre</h3>
                     <p class="product-price">@prod.PrecioVenta.ToString("C", new System.Globalization.CultureInfo("es-BO"))</p>
                     <div class="product-stock-info">
                         @if (prod.Stock > 0)
@@ -70,7 +70,7 @@
                                     <i class="fa-solid fa-plus"></i>
                                 </button>
                             </div>
-                            <button class="btn-add-cart" onclick="addToCart(@prod.ProductoId, this)">
+                            <button class="btn-premium btn-add-cart" onclick="addToCart(@prod.ProductoId, this)">
                                 <i class="fa-solid fa-cart-plus"></i> <span>Agregar</span>
                             </button>
                         </div>

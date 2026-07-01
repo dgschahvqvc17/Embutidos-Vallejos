@@ -7,14 +7,14 @@
     <a asp-action="Index" class="btn-back-link mb-4 d-inline-block"><i class="fa-solid fa-arrow-left me-2"></i>Volver a productos</a>
 
     <div class="row g-5">
-        <div class="col-md-5">
-            <div class="product-detail-img-wrapper">
+        <div class="col-md-5 animate-fade-up">
+            <div class="product-detail-img-wrapper glass-panel glow-border">
                 <img src="@(Model.Imagen ?? "/img/LogoVallejos.png")" alt="@Model.Nombre" class="product-detail-img" />
             </div>
         </div>
-        <div class="col-md-7">
+        <div class="col-md-7 animate-fade-up" style="animation-delay: 0.1s;">
             <span class="product-detail-category">@Model.NombreCategoria</span>
-            <h1 class="product-detail-title">@Model.Nombre</h1>
+            <h1 class="product-detail-title glow-text">@Model.Nombre</h1>
             <p class="product-detail-price">@Model.PrecioVenta.ToString("C", new System.Globalization.CultureInfo("es-BO"))</p>
 
             @if (!string.IsNullOrEmpty(Model.Descripcion))
@@ -34,12 +34,12 @@
             @if (Model.Stock > 0)
             {
                 <div class="d-flex gap-3 mt-4">
-                    <div class="qty-selector">
-                        <button type="button" onclick="changeQty(-1)"><i class="fa-solid fa-minus"></i></button>
-                        <input type="number" id="detailQty" value="1" min="1" max="@Model.Stock" readonly />
-                        <button type="button" onclick="changeQty(1)"><i class="fa-solid fa-plus"></i></button>
+                    <div class="qty-selector glass-input" style="display:flex; align-items:center; background: rgba(255,255,255,0.04); border-radius: 6px; overflow:hidden;">
+                        <button type="button" onclick="changeQty(-1)" style="background:transparent; border:none; color:white; padding:10px 15px;"><i class="fa-solid fa-minus"></i></button>
+                        <input type="number" id="detailQty" value="1" min="1" max="@Model.Stock" readonly style="background:transparent; border:none; color:white; width:50px; text-align:center;" />
+                        <button type="button" onclick="changeQty(1)" style="background:transparent; border:none; color:white; padding:10px 15px;"><i class="fa-solid fa-plus"></i></button>
                     </div>
-                    <button class="btn-add-cart-detail" onclick="addToCart(@Model.ProductoId)">
+                    <button class="btn-premium btn-add-cart-detail" onclick="addToCart(@Model.ProductoId)">
                         <i class="fa-solid fa-cart-plus"></i> Agregar al Carrito
                     </button>
                 </div>
