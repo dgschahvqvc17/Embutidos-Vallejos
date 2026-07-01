@@ -31,6 +31,7 @@ builder.Services.AddScoped<IVentaService, VentaService>();
 builder.Services.AddScoped<IReporteService, ReporteService>();
 builder.Services.AddScoped<IQRService, QRService>();
 builder.Services.AddHttpClient<IPayPalService, PayPalService>();
+builder.Services.AddScoped<IStripeService, StripeService>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
