@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Iniciar Sesion - Embutidos Vallejos</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -19,40 +19,82 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: var(--font-body); min-height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; overflow-x: hidden; }
         .video-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; }
-        .video-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(10,11,15,0.75) 0%, rgba(0,0,0,0.55) 50%, rgba(10,11,15,0.7) 100%); z-index: -1; }
+        .video-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(10,11,15,0.85) 0%, rgba(0,0,0,0.65) 50%, rgba(10,11,15,0.8) 100%); z-index: -1; }
         .back-home { position: fixed; top: 24px; left: 24px; z-index: 10; }
-        .back-home a { display: inline-flex; align-items: center; gap: 6px; color: rgba(232,232,238,0.5); text-decoration: none; font-size: 13px; font-weight: 500; padding: 8px 16px; border-radius: 6px; background: rgba(21,22,28,0.6); border: 1px solid rgba(38,40,56,0.5); backdrop-filter: blur(10px); transition: all 0.25s ease; }
+        .back-home a { display: inline-flex; align-items: center; gap: 6px; color: rgba(255,255,255,0.9); text-decoration: none; font-size: 13px; font-weight: 500; padding: 8px 16px; border-radius: 6px; background: rgba(21,22,28,0.6); border: 1px solid rgba(38,40,56,0.5); backdrop-filter: blur(10px); transition: all 0.25s ease; }
         .back-home a:hover { color: var(--accent); border-color: var(--accent); transform: translateX(-3px); }
         .login-container { width: 100%; max-width: 400px; padding: 20px; position: relative; z-index: 1; }
         .login-card { padding: 40px 36px 32px; border-radius: var(--radius-lg); }
         .logo-section { text-align: center; margin-bottom: 32px; }
         .logo-title { font-family: var(--font-display); font-weight: 900; font-size: 28px; color: var(--text-primary); letter-spacing: -0.3px; line-height: 1.2; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
         .logo-title span { color: var(--accent); }
-        .logo-subtitle { color: rgba(232,232,238,0.5); font-size: 11px; letter-spacing: 4px; text-transform: uppercase; margin-top: 6px; font-weight: 600; }
-        .form-label { color: rgba(232,232,238,0.6); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
-        .form-control { padding: 12px 14px; padding-left: 44px; font-size: 15px; height: 48px; border-radius: var(--radius-sm); }
-        .form-control::placeholder { color: rgba(255,255,255,0.3); }
+        
+        /* Modificado: Color blanco para los textos pequeños en la tarjeta */
+        .logo-subtitle { color: #ffffff; font-size: 11px; letter-spacing: 4px; text-transform: uppercase; margin-top: 6px; font-weight: 600; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+        .form-label { color: rgba(255,255,255,0.9); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+        
+        .form-control { padding: 12px 14px; padding-left: 44px; font-size: 15px; height: 48px; border-radius: var(--radius-sm); color: #ffffff; }
+        
+        /* Modificado: Color blanco al 80% para placeholders en lugar de gris/amarillo */
+        .form-control::placeholder { color: rgba(255, 255, 255, 0.7) !important; }
+        
         .form-control:-webkit-autofill, .form-control:-webkit-autofill:hover, .form-control:-webkit-autofill:focus { -webkit-text-fill-color: #ffffff !important; -webkit-box-shadow: 0 0 0px 1000px rgba(42,44,58,0.9) inset !important; transition: background-color 5000s ease-in-out 0s; caret-color: #ffffff; }
+
+        .password-input { padding-right: 48px !important; }
+
         .input-group { position: relative; }
-        .input-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.4); font-size: 15px; z-index: 4; pointer-events: none; transition: color 0.3s; }
+        
+        /* Iconos de input mas blancos */
+        .input-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.8); font-size: 15px; z-index: 4; pointer-events: none; transition: color 0.3s; }
+        
         .form-control:focus ~ .input-icon, .form-control:focus + .input-icon { color: var(--accent); }
-        .toggle-password { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.4); background: none; border: none; cursor: pointer; font-size: 15px; padding: 6px; z-index: 4; transition: color 0.2s; }
-        .toggle-password:hover { color: var(--accent); }
+        
+        .toggle-password { 
+            position: absolute; 
+            right: 8px; /* Ajuste para el circulo */
+            top: 50%; 
+            transform: translateY(-50%); 
+            color: rgba(255,255,255,0.9); 
+            background: rgba(11, 12, 16, 0.6); /* Fondo oscuro semitransparente */
+            border: 1px solid rgba(255,255,255,0.15); /* Borde super sutil */
+            border-radius: 50%; /* Círculo perfecto */
+            cursor: pointer; 
+            font-size: 14px; 
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 4; 
+            transition: all 0.2s; 
+        }
+        .toggle-password:hover { 
+            color: var(--accent); 
+            background: rgba(0,0,0,0.8);
+            border-color: rgba(201, 169, 78, 0.4);
+        }
+
         .btn-login { width: 100%; margin-top: 8px; font-size: 15px; padding: 14px; }
-        .form-check-label { color: rgba(232,232,238,0.4); font-size: 13px; cursor: pointer; user-select: none; }
-        .form-check-input { background-color: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.08); width: 16px; height: 16px; cursor: pointer; margin-top: 0; }
+        
+        /* Modificado: Color blanco para labels del checkbox, links, pie de pagina, etc. */
+        .form-check-label { color: rgba(255,255,255,0.9); font-size: 13px; cursor: pointer; user-select: none; }
+        .form-check-input { background-color: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); width: 16px; height: 16px; cursor: pointer; margin-top: 0; }
         .form-check-input:checked { background-color: var(--primary); border-color: var(--primary); }
         .text-validation { color: var(--danger); font-size: 11px; margin-top: 4px; display: block; }
         .alert-danger { background: rgba(255,23,68,0.08); border: 1px solid rgba(255,23,68,0.15); border-radius: 6px; color: var(--danger); font-size: 12px; padding: 10px 14px; margin-bottom: 18px; }
         .alert-danger ul { list-style: none; padding: 0; margin: 0; }
+        
         .divider { display: flex; align-items: center; gap: 14px; margin: 22px 0; }
-        .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.06); }
-        .divider span { color: rgba(232,232,238,0.25); font-size: 10px; text-transform: uppercase; letter-spacing: 2px; }
+        .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.2); }
+        .divider span { color: rgba(255,255,255,0.85); font-size: 10px; text-transform: uppercase; letter-spacing: 2px; }
+        
         .register-link { text-align: center; margin-top: 18px; }
-        .register-link span { color: rgba(232,232,238,0.4); font-size: 13px; }
+        .register-link span { color: rgba(255,255,255,0.85); font-size: 13px; }
         .register-link a { color: var(--accent); text-decoration: none; font-weight: 600; margin-left: 4px; transition: color 0.2s; }
         .register-link a:hover { color: var(--accent); text-decoration: underline; }
-        .footer-text { text-align: center; margin-top: 18px; color: rgba(232,232,238,0.2); font-size: 10px; }
+        
+        .footer-text { text-align: center; margin-top: 18px; color: rgba(255,255,255,0.7); font-size: 10px; }
         .mb-4-custom { margin-bottom: 16px; }
         @@media (max-width: 480px) { .login-card { padding: 28px 20px 22px; } .back-home { top: 16px; left: 16px; } .back-home a { font-size: 11px; padding: 6px 12px; } }
     </style>
@@ -64,7 +106,7 @@
     <div class="video-overlay"></div>
 
     <div class="back-home">
-        <a asp-controller="Home" asp-action="Index"><i class="fa-solid fa-arrow-left"></i> Volver al inicio</a>
+        <a asp-controller="Home" asp-action="Index"><i class="bi bi-arrow-left"></i> Volver al inicio</a>
     </div>
     <div class="login-container animate-fade-up">
         <div class="login-card glass-panel glow-border">
@@ -80,19 +122,19 @@
 
             <form asp-action="Login" method="post">
                 <div class="mb-4-custom">
-                    <label asp-for="Email" class="form-label"><i class="fa-regular fa-envelope me-1"></i> @Html.DisplayNameFor(m => m.Email)</label>
+                    <label asp-for="Email" class="form-label"><i class="bi bi-envelope me-1"></i> @Html.DisplayNameFor(m => m.Email)</label>
                     <div class="input-group">
                         <input asp-for="Email" class="form-control glass-input" placeholder="tu@correo.com" />
-                        <i class="fa-regular fa-envelope input-icon"></i>
+                        <i class="bi bi-envelope input-icon"></i>
                     </div>
                     <span asp-validation-for="Email" class="text-validation"></span>
                 </div>
                 <div class="mb-4-custom">
-                    <label asp-for="Password" class="form-label"><i class="fa-solid fa-lock me-1"></i> @Html.DisplayNameFor(m => m.Password)</label>
+                    <label asp-for="Password" class="form-label"><i class="bi bi-lock me-1"></i> @Html.DisplayNameFor(m => m.Password)</label>
                     <div class="input-group">
-                        <input asp-for="Password" class="form-control glass-input" id="password" placeholder="Tu contrasena" />
-                        <i class="fa-solid fa-lock input-icon"></i>
-                        <button type="button" class="toggle-password" onclick="togglePassword()"><i class="fa-regular fa-eye" id="toggleIcon"></i></button>
+                        <input asp-for="Password" class="form-control glass-input password-input" id="password" placeholder="Tu contrasena" />
+                        <i class="bi bi-lock input-icon"></i>
+                        <button type="button" class="toggle-password" onclick="togglePassword()"><i class="bi bi-eye" id="toggleIcon"></i></button>
                     </div>
                     <span asp-validation-for="Password" class="text-validation"></span>
                 </div>
@@ -102,14 +144,14 @@
                         <label asp-for="RememberMe" class="form-check-label"></label>
                     </div>
                 </div>
-                <button type="submit" class="btn-premium btn-login"><i class="fa-regular fa-arrow-right-to-bracket me-2"></i> Iniciar Sesion</button>
+                <button type="submit" class="btn-premium btn-login"><i class="bi bi-box-arrow-in-right me-2"></i> Iniciar Sesion</button>
             </form>
 
             <div class="divider"><span>O</span></div>
 
             <div class="register-link">
                 <span>¿No tienes cuenta?</span>
-                <a asp-controller="Account" asp-action="Register">Crea una aqui <i class="fa-solid fa-arrow-right ms-1" style="font-size: 11px;"></i></a>
+                <a asp-controller="Account" asp-action="Register">Crea una aqui <i class="bi bi-arrow-right ms-1" style="font-size: 11px;"></i></a>
             </div>
 
             <div class="footer-text">&copy; 2026 Embutidos Vallejos &mdash; Todos los derechos reservados</div>
@@ -124,8 +166,8 @@
         function togglePassword() {
             const input = document.getElementById('password');
             const icon = document.getElementById('toggleIcon');
-            if (input.type === 'password') { input.type = 'text'; icon.classList.replace('fa-eye', 'fa-eye-slash'); }
-            else { input.type = 'password'; icon.classList.replace('fa-eye-slash', 'fa-eye'); }
+            if (input.type === 'password') { input.type = 'text'; icon.classList.replace('bi-eye', 'bi-eye-slash'); }
+            else { input.type = 'password'; icon.classList.replace('bi-eye-slash', 'bi-eye'); }
         }
     </script>
 </body>

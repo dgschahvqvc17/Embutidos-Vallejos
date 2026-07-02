@@ -13,7 +13,7 @@
     <div class="col-md-6">
         <div class="card-reporte">
             <div class="card-reporte-header">
-                <h5><i class="fa-solid fa-chart-simple me-2"></i> Ventas (Ultimos 30 dias)</h5>
+                <h5><i class="bi bi-bar-chart-line me-2"></i> Ventas (Ultimos 30 dias)</h5>
             </div>
             <div class="card-reporte-body">
                 <div class="row g-3">
@@ -57,7 +57,7 @@
     <div class="col-md-6">
         <div class="card-reporte">
             <div class="card-reporte-header">
-                <h5><i class="fa-solid fa-boxes-stacked me-2"></i> Inventario</h5>
+                <h5><i class="bi bi-boxes me-2"></i> Inventario</h5>
             </div>
             <div class="card-reporte-body">
                 <div class="row g-3">
@@ -110,7 +110,7 @@
     <div class="col-md-6">
         <div class="card-reporte">
             <div class="card-reporte-header">
-                <h5><i class="fa-solid fa-truck me-2"></i> Pedidos (Ultimos 30 dias)</h5>
+                <h5><i class="bi bi-truck me-2"></i> Pedidos (Ultimos 30 dias)</h5>
             </div>
             <div class="card-reporte-body">
                 <div class="row g-3">
@@ -148,27 +148,27 @@
     <div class="col-md-6">
         <div class="card-reporte">
             <div class="card-reporte-header">
-                <h5><i class="fa-solid fa-triangle-exclamation me-2"></i> Alertas</h5>
+                <h5><i class="bi bi-exclamation-triangle me-2"></i> Alertas</h5>
             </div>
             <div class="card-reporte-body">
                 @if (reporteInventario?.ProductosSinStock > 0 || reporteInventario?.ProductosStockBajo > 0)
                 {
                     <div class="alert-item alert-warning-item">
-                        <i class="fa-solid fa-exclamation-circle me-2"></i>
+                        <i class="bi bi-exclamation-circle me-2"></i>
                         @reporteInventario.ProductosStockBajo productos con stock bajo
                     </div>
                 }
                 @if (reporteInventario?.ProductosSinStock > 0)
                 {
                     <div class="alert-item alert-danger-item">
-                        <i class="fa-solid fa-times-circle me-2"></i>
+                        <i class="bi bi-x-circle me-2"></i>
                         @reporteInventario.ProductosSinStock productos sin stock
                     </div>
                 }
                 @if (reporteInventario?.ProductosSinStock == 0 && reporteInventario?.ProductosStockBajo == 0)
                 {
                     <div class="alert-item alert-success-item">
-                        <i class="fa-solid fa-check-circle me-2"></i>
+                        <i class="bi bi-check-circle me-2"></i>
                         Inventario en buen estado
                     </div>
                 }

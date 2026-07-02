@@ -9,7 +9,7 @@
         <p class="admin-subtitle">Gestion del personal de la empresa</p>
     </div>
     <a asp-action="CrearEmpleado" class="btn btn-primary-custom">
-        <i class="fa-solid fa-user-plus me-2"></i> Nuevo Empleado
+        <i class="bi bi-person-plus me-2"></i> Nuevo Empleado
     </a>
 </div>
 
@@ -55,12 +55,12 @@
                     <td>
                         <div class="action-btns">
                             <a asp-action="EditarEmpleado" asp-route-id="@emp.EmpleadoId" class="btn-icon btn-edit" title="Editar">
-                                <i class="fa-solid fa-pen"></i>
+                                <i class="bi bi-pencil"></i>
                             </a>
                             <form asp-action="EliminarEmpleado" asp-route-id="@emp.EmpleadoId" method="post" class="d-inline"
                                   onsubmit="return confirm('¿Eliminar empleado @emp.Nombre @emp.Apellido?')">
                                 <button type="submit" class="btn-icon btn-delete" title="Eliminar">
-                                    <i class="fa-solid fa-trash-can"></i>
+                                    <i class="bi bi-trash"></i>
                                 </button>
                             </form>
                         </div>
