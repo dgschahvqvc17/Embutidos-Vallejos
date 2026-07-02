@@ -1,0 +1,188 @@
+@model Embutidos_Vallejos.Models.DTOs.PedidoDto
+@{
+    ViewData["Title"] = $"Pedido #{Model.PedidoId}";
+    var repartidores = ViewBag.Repartidores as List<Embutidos_Vallejos.Models.DTOs.RepartidorDto>;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <a asp-action="Pedidos" class="btn-back-link"><i class="fa-solid fa-arrow-left me-2"></i>Volver a Pedidos</a>
+        <h1 class="admin-title mt-2">Pedido #@Model.PedidoId</h1>
+    </div>
+    <div class="d-flex gap-2">
+        @if (Model.Estado == "Pendiente" || Model.Estado == "Pagado")
+        {
+            <form asp-action="ActualizarEstadoPedido" asp-route-id="@Model.PedidoId" method="post" class="d-inline">
+                <input type="hidden" name="estado" value="En Preparacion" />
+                <button type="submit" class="btn-action btn-progress"><i class="fa-solid fa-play me-1"></i> Iniciar Preparacion</button>
+            </form>
+        }
+        @if (Model.Estado != "Entregado" && Model.Estado != "Cancelado")
+        {
+            <form asp-action="CancelarPedido" asp-route-id="@Model.PedidoId" method="post" class="d-inline"
+                  onsubmit="return confirm('¿Cancelar pedido #@Model.PedidoId?')">
+                <button type="submit" class="btn-action btn-cancel"><i class="fa-solid fa-xmark me-1"></i> Cancelar</button>
+            </form>
+        }
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card-detalle">
+            <div class="card-detalle-header">
+                <h5><i class="fa-solid fa-receipt me-2"></i> Detalle del Pedido</h5>
+                <span class="status-badge status-@Model.Estado.ToLower().Replace(" ", "")">
+                    @Model.Estado
+                </span>
+            </div>
+            <div class="card-detalle-body">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Cliente</span>
+                        <span class="info-value">@Model.NombreCliente</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Fecha</span>
+                        <span class="info-value">@Model.FechaPedido.ToString("dd/MM/yyyy HH:mm")</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Direccion</span>
+                        <span class="info-value">@(Model.DireccionEntrega ?? "No especificada")</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Total</span>
+                        <span class="info-value fw-bold text-red">@Model.Total.ToString("C", new System.Globalization.CultureInfo("es-BO"))</span>
+                    </div>
+                </div>
+
+                <h6 class="mt-4 mb-3">Productos</h6>
+                <table class="table-detalle">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Precio</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var d in Model.Detalles)
+                        {
+                            <tr>
+                                <td>@d.NombreProducto</td>
+                                <td>@d.Cantidad</td>
+                                <td>@d.PrecioUnitario.ToString("C", new System.Globalization.CultureInfo("es-BO"))</td>
+                                <td>@d.Subtotal.ToString("C", new System.Globalization.CultureInfo("es-BO"))</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        @if (Model.Estado == "Pendiente" || Model.Estado == "Pagado")
+        {
+            <div class="card-detalle mb-4">
+                <div class="card-detalle-header">
+                    <h5><i class="fa-solid fa-truck me-2"></i> Asignar Repartidor</h5>
+                </div>
+                <div class="card-detalle-body">
+                    @if (repartidores != null && repartidores.Any())
+                    {
+                        <form asp-action="AsignarRepartidor" method="post">
+                            <input type="hidden" name="pedidoId" value="@Model.PedidoId" />
+                            <div class="mb-3">
+                                <select name="repartidorId" class="form-control-custom" required>
+                                    <option value="">Seleccionar repartidor...</option>
+                                    @foreach (var rep in repartidores)
+                                    {
+                                        <option value="@rep.RepartidorId">@rep.Nombre @rep.Apellido - @rep.PlacaVehiculo</option>
+                                    }
+                                </select>
+                            </div>
+                            <button type="submit" class="btn-submit w-100">Asignar</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">No hay repartidores disponibles</p>
+                    }
+                </div>
+            </div>
+        }
+
+        <div class="card-detalle">
+            <div class="card-detalle-header">
+                <h5><i class="fa-solid fa-credit-card me-2"></i> Pago</h5>
+            </div>
+            <div class="card-detalle-body">
+                @if (Model.Pago != null)
+                {
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Metodo</span>
+                            <span class="info-value">@Model.Pago.TipoPago</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Estado</span>
+                            <span class="info-value">@Model.Pago.EstadoPago</span>
+                        </div>
+                        @if (!string.IsNullOrEmpty(Model.Pago.CodigoTransaccion))
+                        {
+                            <div class="info-item">
+                                <span class="info-label">Transaccion</span>
+                                <span class="info-value" style="font-size:12px;word-break:break-all;">@Model.Pago.CodigoTransaccion</span>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted mb-0">Sin informacion de pago</p>
+                }
+            </div>
+        </div>
+
+        @if (Model.Entrega != null)
+        {
+            <div class="card-detalle mt-4">
+                <div class="card-detalle-header">
+                    <h5><i class="fa-solid fa-location-dot me-2"></i> Entrega</h5>
+                </div>
+                <div class="card-detalle-body">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Estado</span>
+                            <span class="info-value">@Model.Entrega.EstadoEntrega</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Repartidor</span>
+                            <span class="info-value">@(Model.NombreRepartidor ?? "No asignado")</span>
+                        </div>
+                        @if (Model.Entrega.FechaSalida.HasValue)
+                        {
+                            <div class="info-item">
+                                <span class="info-label">Salida</span>
+                                <span class="info-value">@Model.Entrega.FechaSalida.Value.ToString("dd/MM HH:mm")</span>
+                            </div>
+                        }
+                        @if (Model.Entrega.FechaEntrega.HasValue)
+                        {
+                            <div class="info-item">
+                                <span class="info-label">Entregado</span>
+                                <span class="info-value">@Model.Entrega.FechaEntrega.Value.ToString("dd/MM HH:mm")</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+
+}

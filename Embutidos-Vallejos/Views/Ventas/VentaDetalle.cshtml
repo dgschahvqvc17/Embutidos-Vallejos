@@ -1,0 +1,137 @@
+@model Embutidos_Vallejos.Models.DTOs.VentaDto
+@{
+    ViewData["Title"] = "Venta Presencial #" + Model.VentaId;
+}
+
+<div class="mb-4">
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+        <i class="fa-regular fa-arrow-left me-1"></i> Volver al panel
+    </a>
+</div>
+
+<div class="detalle-container">
+    <div class="detalle-main">
+        <div class="card-detail">
+            <h5 class="card-detail-title">
+                <i class="fa-solid fa-box me-2"></i> Productos
+            </h5>
+            <div class="detalle-productos">
+                @foreach (var d in Model.Detalles)
+                {
+                    <div class="detalle-producto-row">
+                        <div class="detalle-producto-img-col">
+                            @if (!string.IsNullOrEmpty(d.ImagenProducto))
+                            {
+                                <img src="@d.ImagenProducto" alt="@d.NombreProducto" class="detalle-producto-img" />
+                            }
+                            else
+                            {
+                                <div class="detalle-producto-img detalle-producto-img-placeholder">
+                                    <i class="fa-solid fa-drumstick-bite"></i>
+                                </div>
+                            }
+                        </div>
+                        <div class="detalle-producto-info">
+                            <div class="detalle-producto-nombre">@d.NombreProducto</div>
+                            <div class="detalle-producto-detalles">
+                                <span>@d.Cantidad x Bs @d.PrecioUnitario.ToString("N2")</span>
+                            </div>
+                        </div>
+                        <div class="detalle-producto-subtotal">
+                            <span class="detalle-subtotal-label">Subtotal</span>
+                            <span class="detalle-subtotal-valor">Bs @d.Subtotal.ToString("N2")</span>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="detalle-total-row">
+                <span>Total</span>
+                <span class="detalle-total-valor">Bs @Model.Total.ToString("N2")</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="detalle-sidebar">
+        <div class="card-detail">
+            <h5 class="card-detail-title">
+                <i class="fa-regular fa-circle-info me-2"></i> Informacion
+            </h5>
+            <div class="detalle-info-list">
+                <div class="detalle-info-item">
+                    <span class="detalle-info-label">Venta #</span>
+                    <span class="detalle-info-valor">@Model.VentaId</span>
+                </div>
+                <div class="detalle-info-item">
+                    <span class="detalle-info-label">Cliente</span>
+                    <span class="detalle-info-valor">@(Model.NombreCliente ?? "-")</span>
+                </div>
+                <div class="detalle-info-item">
+                    <span class="detalle-info-label">Vendedor</span>
+                    <span class="detalle-info-valor">@(Model.NombreEmpleado ?? "-")</span>
+                </div>
+                <div class="detalle-info-item">
+                    <span class="detalle-info-label">Fecha</span>
+                    <span class="detalle-info-valor">@Model.FechaVenta.ToString("dd/MM/yyyy HH:mm")</span>
+                </div>
+                <div class="detalle-info-item">
+                    <span class="detalle-info-label">Metodo de Pago</span>
+                    <span class="detalle-info-valor">
+                        @switch (Model.MetodoPago)
+                        {
+                            case "Efectivo":
+                                <span class="badge-pago badge-efectivo"><i class="fa-solid fa-money-bill-wave me-1"></i>Efectivo</span>
+                                break;
+                            case "QR":
+                                <span class="badge-pago badge-qr"><i class="fa-solid fa-qrcode me-1"></i>QR</span>
+                                break;
+                            case "PayPal":
+                                <span class="badge-pago badge-paypal"><i class="fa-brands fa-paypal me-1"></i>PayPal</span>
+                                break;
+                            case "Stripe":
+                                <span class="badge-pago badge-stripe"><i class="fa-brands fa-cc-stripe me-1"></i>Stripe</span>
+                                break;
+                            default:
+                                <span>@Model.MetodoPago</span>
+                                break;
+                        }
+                    </span>
+                </div>
+                <div class="detalle-info-item">
+                    <span class="detalle-info-label">Estado</span>
+                    <span class="detalle-info-valor"><span class="badge-status status-active">Completada</span></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-detail mt-3">
+            <h5 class="card-detail-title">
+                <i class="fa-regular fa-clock me-2"></i> Resumen
+            </h5>
+            <div class="detalle-resumen">
+                <div class="detalle-resumen-item">
+                    <span class="detalle-resumen-label">Items</span>
+                    <span class="detalle-resumen-valor">@Model.Detalles.Sum(d => d.Cantidad)</span>
+                </div>
+                <div class="detalle-resumen-item">
+                    <span class="detalle-resumen-label">Productos distintos</span>
+                    <span class="detalle-resumen-valor">@Model.Detalles.Count</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-detail mt-3">
+            <div class="detalle-acciones">
+                <button class="btn-accion btn-accion-imprimir" onclick="window.print()">
+                    <i class="fa-regular fa-print me-2"></i> Imprimir
+                </button>
+                <a asp-action="Index" class="btn-accion btn-accion-volver">
+                    <i class="fa-regular fa-arrow-left me-2"></i> Volver
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+}

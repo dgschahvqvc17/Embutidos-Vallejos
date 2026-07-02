@@ -1,0 +1,155 @@
+@{
+    ViewData["Title"] = "Ventas";
+    var pedidos = ViewBag.Pedidos != null ? (List<Embutidos_Vallejos.Models.DTOs.PedidoDto>)ViewBag.Pedidos : new();
+    var ventas = ViewBag.Ventas != null ? (List<Embutidos_Vallejos.Models.DTOs.VentaDto>)ViewBag.Ventas : new();
+    var estados = new[] { "Pendiente", "En Preparacion", "En Camino", "Entregado", "Cancelado" };
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="admin-title">Panel de Ventas</h1>
+        <p class="admin-subtitle">Gestiona pedidos y registra ventas presenciales</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="NuevaVenta" class="btn-action btn-action-primary">
+            <i class="fa-solid fa-plus me-1"></i> Nueva Venta
+        </a>
+    </div>
+</div>
+
+@if (TempData["Success"] is string success)
+{
+    <div class="alert-custom alert-success-custom">@success</div>
+}
+
+<ul class="nav nav-tabs-custom mb-4" id="ventasTabs">
+    <li class="nav-item">
+        <button class="nav-link-custom active" data-tab="pedidos">
+            <i class="fa-regular fa-receipt me-1"></i> Pedidos
+        </button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link-custom" data-tab="ventas">
+            <i class="fa-solid fa-store me-1"></i> Ventas Presenciales
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content-custom">
+    <div class="tab-pane active" id="tab-pedidos">
+        <div class="mb-4 d-flex gap-2 flex-wrap">
+            <a asp-action="Index" asp-route-tab="pedidos" class="btn-filter @(ViewBag.EstadoActual == null ? "btn-filter-active" : "")">Todos</a>
+            @foreach (var e in estados)
+            {
+                <a asp-action="Index" asp-route-estado="@e" asp-route-tab="pedidos" class="btn-filter @(ViewBag.EstadoActual == e ? "btn-filter-active" : "")">@e</a>
+            }
+        </div>
+
+        <div class="table-container">
+            <table class="table-custom">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Cliente</th>
+                        <th>Total</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th>Pago</th>
+                        <th>Accion</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in pedidos)
+                    {
+                        <tr>
+                            <td>@p.PedidoId</td>
+                            <td>@p.NombreCliente</td>
+                            <td>Bs @p.Total.ToString("N2")</td>
+                            <td>@p.FechaPedido.ToString("dd/MM/yy HH:mm")</td>
+                            <td>
+                                @switch (p.Estado)
+                                {
+                                    case "Pendiente": <span class="badge-status status-pending">Pendiente</span>; break;
+                                    case "En Preparacion": <span class="badge-status status-warning">En Preparacion</span>; break;
+                                    case "En Camino": <span class="badge-status status-info">En Camino</span>; break;
+                                    case "Entregado": <span class="badge-status status-active">Entregado</span>; break;
+                                    case "Cancelado": <span class="badge-status status-inactive">Cancelado</span>; break;
+                                    default: <span class="badge-status">@p.Estado</span>; break;
+                                }
+                            </td>
+                            <td>@(p.Pago?.EstadoPago ?? "-")</td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@p.PedidoId" class="btn-icon btn-view" title="Ver detalle">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                    @if (!pedidos.Any())
+                    {
+                        <tr><td colspan="7" class="text-center py-4 text-secondary">No hay pedidos.</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="tab-pane" id="tab-ventas">
+        <div class="d-flex gap-2 mb-4">
+            <a asp-action="Index" asp-route-tab="ventas" class="btn-filter btn-filter-active">Todas</a>
+        </div>
+
+        <div class="table-container">
+            <table class="table-custom">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Cliente</th>
+                        <th>Total</th>
+                        <th>Fecha</th>
+                        <th>Pago</th>
+                        <th>Vendedor</th>
+                        <th>Accion</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var v in ventas)
+                    {
+                        <tr>
+                            <td>@v.VentaId</td>
+                            <td>@v.NombreCliente</td>
+                            <td>Bs @v.Total.ToString("N2")</td>
+                            <td>@v.FechaVenta.ToString("dd/MM/yy HH:mm")</td>
+                            <td>@v.MetodoPago</td>
+                            <td>@(v.NombreEmpleado ?? "-")</td>
+                            <td>
+                                <a asp-action="VentaDetalle" asp-route-id="@v.VentaId" class="btn-icon btn-view" title="Ver detalle">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                    @if (!ventas.Any())
+                    {
+                        <tr><td colspan="7" class="text-center py-4 text-secondary">No hay ventas presenciales.</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('[data-tab]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.nav-link-custom').forEach(x => x.classList.remove('active'));
+                this.classList.add('active');
+                document.querySelectorAll('.tab-pane').forEach(x => x.classList.remove('active'));
+                document.getElementById('tab-' + this.getAttribute('data-tab')).classList.add('active');
+            });
+        });
+    </script>
+
+
+}

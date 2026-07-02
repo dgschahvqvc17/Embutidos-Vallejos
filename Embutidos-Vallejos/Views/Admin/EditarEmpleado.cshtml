@@ -1,0 +1,90 @@
+@model Embutidos_Vallejos.Models.DTOs.EmpleadoUpdateDto
+@{
+    ViewData["Title"] = "Editar Empleado";
+}
+
+<div class="form-page">
+    <div class="form-card">
+        <div class="form-header">
+            <a asp-action="Empleados" class="btn-back"><i class="fa-solid fa-arrow-left"></i></a>
+            <h2>Editar Empleado</h2>
+            <p>Actualiza la informacion del empleado</p>
+        </div>
+
+        <form asp-action="EditarEmpleado" method="post">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="Nombre" class="form-label-custom"></label>
+                    <input asp-for="Nombre" class="form-control-custom" />
+                    <span asp-validation-for="Nombre" class="text-validation"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Apellido" class="form-label-custom"></label>
+                    <input asp-for="Apellido" class="form-control-custom" />
+                    <span asp-validation-for="Apellido" class="text-validation"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Email" class="form-label-custom"></label>
+                    <input asp-for="Email" class="form-control-custom" />
+                    <span asp-validation-for="Email" class="text-validation"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Telefono" class="form-label-custom"></label>
+                    <div class="input-group phone-wrapper">
+                        <span class="phone-prefix">+591</span>
+                        <input asp-for="Telefono" class="form-control-custom phone-input" id="editEmpTel" placeholder="70000000" maxlength="12" />
+                    </div>
+                    <span asp-validation-for="Telefono" class="text-validation"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="FechaContratacion" class="form-label-custom"></label>
+                    <input asp-for="FechaContratacion" class="form-control-custom" type="date" />
+                    <span asp-validation-for="FechaContratacion" class="text-validation"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="RolId" class="form-label-custom">Rol</label>
+                    <select asp-for="RolId" class="form-control-custom" id="editRolSelect" onchange="toggleEditPlaca()">
+                        <option value="1">Administrador</option>
+                        <option value="2">Producción</option>
+                        <option value="3">Ventas</option>
+                        <option value="4">Almacén</option>
+                        <option value="5">Repartidor</option>
+                    </select>
+                    <span asp-validation-for="RolId" class="text-validation"></span>
+                </div>
+                <div class="col-md-6" id="editPlacaField" style="display:none;">
+                    <label asp-for="PlacaVehiculo" class="form-label-custom">Placa del Vehículo</label>
+                    <input asp-for="PlacaVehiculo" class="form-control-custom" placeholder="ABC-1234" />
+                    <span asp-validation-for="PlacaVehiculo" class="text-validation"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Estado" class="form-label-custom"></label>
+                    <select asp-for="Estado" class="form-control-custom">
+                        <option value="Activo">Activo</option>
+                        <option value="Inactivo">Inactivo</option>
+                        <option value="Vacaciones">Vacaciones</option>
+                    </select>
+                    <span asp-validation-for="Estado" class="text-validation"></span>
+                </div>
+            </div>
+
+            <div class="form-footer">
+                <a asp-action="Empleados" class="btn-cancel">Cancelar</a>
+                <button type="submit" class="btn-submit">
+                    <i class="fa-solid fa-save me-2"></i> Guardar Cambios
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+
+    <script>
+        function toggleEditPlaca() {
+            var rol = document.getElementById('editRolSelect').value;
+            document.getElementById('editPlacaField').style.display = rol === '5' ? 'block' : 'none';
+        }
+        document.addEventListener('DOMContentLoaded', function(){ setupPhoneInput('editEmpTel'); toggleEditPlaca(); });
+    </script>
+}

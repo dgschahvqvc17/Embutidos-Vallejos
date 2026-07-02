@@ -1,0 +1,85 @@
+@model List<Embutidos_Vallejos.Models.DTOs.ProductoDto>
+@{
+    ViewData["Title"] = "Gestion de Productos";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="admin-title">Productos</h1>
+        <p class="admin-subtitle">Catalogo de productos y control de inventario</p>
+    </div>
+    <a asp-action="CrearProducto" class="btn btn-primary-custom">
+        <i class="fa-solid fa-plus me-2"></i> Nuevo Producto
+    </a>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert-custom alert-success-custom">@TempData["Success"]</div>
+}
+
+<div class="table-container">
+    <table class="table-custom">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Categoria</th>
+                <th>P. Venta</th>
+                <th>Stock</th>
+                <th>Stock Min</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var prod in Model)
+            {
+                <tr>
+                    <td>@prod.ProductoId</td>
+                    <td><strong>@prod.Nombre</strong></td>
+                    <td><span class="badge-role">@prod.NombreCategoria</span></td>
+                    <td>@prod.PrecioVenta.ToString("C", new System.Globalization.CultureInfo("es-BO"))</td>
+                    <td>
+                        @if (prod.StockBajo)
+                        {
+                            <span class="text-warning fw-bold">@prod.Stock</span>
+                        }
+                        else
+                        {
+                            <span>@prod.Stock</span>
+                        }
+                    </td>
+                    <td>@prod.StockMinimo</td>
+                    <td>
+                        @if (prod.Estado == "Activo")
+                        {
+                            <span class="badge-status status-active">Activo</span>
+                        }
+                        else
+                        {
+                            <span class="badge-status status-inactive">@prod.Estado</span>
+                        }
+                    </td>
+                    <td>
+                        <div class="action-btns">
+                            <a asp-action="EditarProducto" asp-route-id="@prod.ProductoId" class="btn-icon btn-edit" title="Editar">
+                                <i class="fa-solid fa-pen"></i>
+                            </a>
+                            <form asp-action="EliminarProducto" asp-route-id="@prod.ProductoId" method="post" class="d-inline"
+                                  onsubmit="return confirm('¿Eliminar producto @prod.Nombre?')">
+                                <button type="submit" class="btn-icon btn-delete" title="Eliminar">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+
+}

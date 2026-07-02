@@ -1,0 +1,182 @@
+@{
+    ViewData["Title"] = "Reportes";
+    var reporteVentas = ViewBag.ReporteVentas as Embutidos_Vallejos.Models.DTOs.ReporteVentasDto;
+    var reporteInventario = ViewBag.ReporteInventario as Embutidos_Vallejos.Models.DTOs.ReporteInventarioDto;
+}
+
+<div class="mb-4">
+    <h1 class="admin-title">Reportes</h1>
+    <p class="admin-subtitle">Analisis de ventas e inventario</p>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="card-reporte">
+            <div class="card-reporte-header">
+                <h5><i class="fa-solid fa-chart-simple me-2"></i> Ventas (Ultimos 30 dias)</h5>
+            </div>
+            <div class="card-reporte-body">
+                <div class="row g-3">
+                    <div class="col-4">
+                        <div class="reporte-metric">
+                            <span class="metric-num">@reporteVentas?.TotalVentas</span>
+                            <span class="metric-desc">Ventas</span>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="reporte-metric">
+                            <span class="metric-num text-red">@reporteVentas?.MontoTotal.ToString("C", new System.Globalization.CultureInfo("es-BO"))</span>
+                            <span class="metric-desc">Monto Total</span>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="reporte-metric">
+                            <span class="metric-num text-gold">@reporteVentas?.PromedioVenta.ToString("C", new System.Globalization.CultureInfo("es-BO"))</span>
+                            <span class="metric-desc">Promedio</span>
+                        </div>
+                    </div>
+                </div>
+
+                @if (reporteVentas?.VentasRecientes.Any() == true)
+                {
+                    <h6 class="mt-4 mb-2" style="font-size:13px;color:var(--text-secondary);">Ventas Recientes</h6>
+                    <div class="mini-table">
+                        @foreach (var v in reporteVentas.VentasRecientes.Take(5))
+                        {
+                            <div class="mini-row">
+                                <span>#@v.VentaId - @v.Cliente</span>
+                                <span class="text-red fw-bold">@v.Total.ToString("C", new System.Globalization.CultureInfo("es-BO"))</span>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card-reporte">
+            <div class="card-reporte-header">
+                <h5><i class="fa-solid fa-boxes-stacked me-2"></i> Inventario</h5>
+            </div>
+            <div class="card-reporte-body">
+                <div class="row g-3">
+                    <div class="col-4">
+                        <div class="reporte-metric">
+                            <span class="metric-num">@reporteInventario?.TotalProductos</span>
+                            <span class="metric-desc">Total Productos</span>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="reporte-metric">
+                            <span class="metric-num text-success">@reporteInventario?.ProductosActivos</span>
+                            <span class="metric-desc">Activos</span>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="reporte-metric">
+                            <span class="metric-num text-warning">@reporteInventario?.ProductosStockBajo</span>
+                            <span class="metric-desc">Stock Bajo</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <div class="reporte-metric">
+                        <span class="metric-num text-gold">@reporteInventario?.ValorInventario.ToString("C", new System.Globalization.CultureInfo("es-BO"))</span>
+                        <span class="metric-desc">Valor del Inventario</span>
+                    </div>
+                </div>
+
+                @if (reporteInventario?.ProductosStockBajoLista.Any() == true)
+                {
+                    <h6 class="mt-4 mb-2" style="font-size:13px;color:var(--text-secondary);">Productos con Stock Bajo</h6>
+                    <div class="mini-table">
+                        @foreach (var p in reporteInventario.ProductosStockBajoLista.Take(5))
+                        {
+                            <div class="mini-row">
+                                <span>@p.Nombre</span>
+                                <span class="text-warning fw-bold">@p.Stock / @p.StockMinimo</span>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card-reporte">
+            <div class="card-reporte-header">
+                <h5><i class="fa-solid fa-truck me-2"></i> Pedidos (Ultimos 30 dias)</h5>
+            </div>
+            <div class="card-reporte-body">
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="reporte-metric">
+                            <span class="metric-num">@reporteVentas?.TotalPedidos</span>
+                            <span class="metric-desc">Pedidos</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="reporte-metric">
+                            <span class="metric-num text-blue">@reporteVentas?.IngresoPedidos.ToString("C", new System.Globalization.CultureInfo("es-BO"))</span>
+                            <span class="metric-desc">Ingreso por Pedidos</span>
+                        </div>
+                    </div>
+                </div>
+
+                @if (reporteVentas?.PedidosRecientes.Any() == true)
+                {
+                    <h6 class="mt-4 mb-2" style="font-size:13px;color:var(--text-secondary);">Pedidos Recientes</h6>
+                    <div class="mini-table">
+                        @foreach (var p in reporteVentas.PedidosRecientes.Take(5))
+                        {
+                            <div class="mini-row">
+                                <span>#@p.PedidoId - @p.Cliente</span>
+                                <span>@p.Estado</span>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card-reporte">
+            <div class="card-reporte-header">
+                <h5><i class="fa-solid fa-triangle-exclamation me-2"></i> Alertas</h5>
+            </div>
+            <div class="card-reporte-body">
+                @if (reporteInventario?.ProductosSinStock > 0 || reporteInventario?.ProductosStockBajo > 0)
+                {
+                    <div class="alert-item alert-warning-item">
+                        <i class="fa-solid fa-exclamation-circle me-2"></i>
+                        @reporteInventario.ProductosStockBajo productos con stock bajo
+                    </div>
+                }
+                @if (reporteInventario?.ProductosSinStock > 0)
+                {
+                    <div class="alert-item alert-danger-item">
+                        <i class="fa-solid fa-times-circle me-2"></i>
+                        @reporteInventario.ProductosSinStock productos sin stock
+                    </div>
+                }
+                @if (reporteInventario?.ProductosSinStock == 0 && reporteInventario?.ProductosStockBajo == 0)
+                {
+                    <div class="alert-item alert-success-item">
+                        <i class="fa-solid fa-check-circle me-2"></i>
+                        Inventario en buen estado
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+}

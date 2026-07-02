@@ -1,0 +1,169 @@
+@model Embutidos_Vallejos.Models.DTOs.PedidoDto
+@{
+    ViewData["Title"] = $"Pedido #{Model.PedidoId}";
+}
+
+<div class="mb-4">
+    <a asp-action="Index" class="btn-back-link"><i class="fa-solid fa-arrow-left me-2"></i>Mis Pedidos</a>
+</div>
+
+<div class="pedido-detail-header">
+    <div>
+        <h1 class="page-title">Pedido #@Model.PedidoId</h1>
+        <p class="pedido-date">Realizado el @Model.FechaPedido.ToString("dd/MM/yyyy HH:mm")</p>
+    </div>
+    @switch (Model.Estado)
+    {
+        case "Pendiente": <span class="order-badge-large badge-pending">Pendiente</span>; break;
+        case "Pagado": <span class="order-badge-large badge-paid">Pagado</span>; break;
+        case "En Preparacion": <span class="order-badge-large badge-progress">En Preparacion</span>; break;
+        case "En Camino": <span class="order-badge-large badge-shipping">En Camino</span>; break;
+        case "Entregado": <span class="order-badge-large badge-delivered">Entregado</span>; break;
+        case "Cancelado": <span class="order-badge-large badge-canceled">Cancelado</span>; break;
+    }
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert-custom alert-success-custom">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert-custom alert-error-custom">@TempData["Error"]</div>
+}
+
+<div class="row g-4 mt-2">
+    <div class="col-lg-8">
+        <div class="detail-card">
+            <h3>Productos</h3>
+            <table class="detail-table">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th>Precio</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var d in Model.Detalles)
+                    {
+                        <tr>
+                            <td>@d.NombreProducto</td>
+                            <td>@d.Cantidad</td>
+                            <td>@d.PrecioUnitario.ToString("C", new System.Globalization.CultureInfo("es-BO"))</td>
+                            <td>@d.Subtotal.ToString("C", new System.Globalization.CultureInfo("es-BO"))</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="detail-total">
+                <span>Total</span>
+                <span class="total-value">@Model.Total.ToString("C", new System.Globalization.CultureInfo("es-BO"))</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="detail-card mb-4">
+            <h3>Informacion</h3>
+            <div class="detail-info">
+                <div class="detail-info-item">
+                    <span class="di-label">Direccion</span>
+                    <span class="di-value">@(Model.DireccionEntrega ?? "No especificada")</span>
+                </div>
+                @if (Model.Pago != null)
+                {
+                    <div class="detail-info-item">
+                        <span class="di-label">Pago</span>
+                        <span class="di-value">@Model.Pago.TipoPago - @Model.Pago.EstadoPago</span>
+                    </div>
+                }
+                @if (Model.NombreRepartidor != null)
+                {
+                    <div class="detail-info-item">
+                        <span class="di-label">Repartidor</span>
+                        <span class="di-value">@Model.NombreRepartidor</span>
+                    </div>
+                    @if (Model.Entrega?.PlacaVehiculo != null)
+                    {
+                        <div class="detail-info-item">
+                            <span class="di-label">Vehiculo</span>
+                            <span class="di-value">@Model.Entrega.PlacaVehiculo</span>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+        @if (Model.Estado != "Entregado" && Model.Estado != "Cancelado" && Model.Estado != "En Camino")
+        {
+            <form asp-action="Cancelar" asp-route-id="@Model.PedidoId" method="post"
+                  onsubmit="return confirm('¿Cancelar pedido #@Model.PedidoId?')">
+                <button type="submit" class="btn-cancel-order">
+                    <i class="fa-solid fa-xmark me-2"></i> Cancelar Pedido
+                </button>
+            </form>
+        }
+
+        @if (Model.Pago?.TipoPago == "QR" && Model.Pago?.EstadoPago == "Completado")
+        {
+            <a asp-controller="Pago" asp-action="Comprobante" asp-route-pedidoId="@Model.PedidoId"
+               class="btn-receipt mt-3">
+                <i class="fa-solid fa-receipt me-2"></i> Ver Comprobante
+            </a>
+        }
+
+        @if (Model.Estado != "Cancelado")
+        {
+            <button class="btn-reorder mt-3 w-100 justify-content-center" onclick="reorder(@Model.PedidoId, this)">
+                <i class="fa-solid fa-rotate"></i> Repetir Pedido
+            </button>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function reorder(pedidoId, btn) {
+            const originalHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.style.opacity = '0.7';
+            fetch('@Url.Action("AgregarDelPedido", "Carrito")', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `pedidoId=${pedidoId}`
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    btn.innerHTML = '<i class="fa-solid fa-check"></i> Agregado al Carrito';
+                    btn.style.background = 'linear-gradient(135deg, #16a34a 0%, #22c55e 100%)';
+                    btn.style.opacity = '1';
+                    setTimeout(() => {
+                        btn.innerHTML = originalHtml;
+                        btn.style.background = '';
+                        btn.style.opacity = '';
+                        btn.disabled = false;
+                    }, 2000);
+                    const badge = document.getElementById('cart-count-side');
+                    if (badge) {
+                        badge.textContent = data.count;
+                        badge.style.display = data.count > 0 ? 'flex' : 'none';
+                    }
+                } else {
+                    alert(data.message);
+                    btn.innerHTML = originalHtml;
+                    btn.style.opacity = '';
+                    btn.disabled = false;
+                }
+            })
+            .catch(() => {
+                alert('Error al conectar con el servidor');
+                btn.innerHTML = originalHtml;
+                btn.style.opacity = '';
+                btn.disabled = false;
+            });
+        }
+    </script>
+}

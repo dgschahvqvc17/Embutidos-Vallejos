@@ -1,0 +1,80 @@
+@model Embutidos_Vallejos.Models.DTOs.PedidoDto
+@{
+    ViewData["Title"] = "Pago con PayPal";
+}
+
+<div class="page-header text-center">
+    <h1 class="page-title">Pago con PayPal</h1>
+    <p class="page-subtitle">Pedido #@Model.PedidoId - Total: @Model.Total.ToString("C", new System.Globalization.CultureInfo("es-BO"))</p>
+</div>
+
+<div class="paypal-container">
+    <div class="paypal-card">
+        <div class="paypal-logo">
+            <i class="fa-brands fa-paypal" style="font-size:48px;color:#009cde;"></i>
+        </div>
+        <p class="paypal-desc">
+            Seras redirigido a PayPal para completar el pago de <strong>@Model.Total.ToString("C", new System.Globalization.CultureInfo("es-BO"))</strong>
+        </p>
+        <div id="paypal-button-container" class="mt-4">
+            <button class="btn-paypal" onclick="initPayPal()" id="paypalBtn">
+                <i class="fa-brands fa-paypal me-2"></i> Pagar con PayPal
+            </button>
+        </div>
+        <div id="paypal-loading" style="display:none;" class="mt-3">
+            <div class="paypal-spinner">
+                <i class="fa-solid fa-spinner fa-spin fa-2x" style="color:#009cde;"></i>
+                <p class="mt-2">Procesando pago...</p>
+            </div>
+        </div>
+        <a asp-controller="Pedido" asp-action="Details" asp-route-id="@Model.PedidoId" class="btn-cancel-paypal mt-3">
+            Cancelar y volver al pedido
+        </a>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        async function initPayPal() {
+            const btn = document.getElementById('paypalBtn');
+            const loading = document.getElementById('paypal-loading');
+            btn.style.display = 'none';
+            loading.style.display = 'block';
+
+            try {
+                const resp = await fetch('@Url.Action("CrearOrdenPayPal", "Pago")', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'pedidoId=@Model.PedidoId'
+                });
+                const data = await resp.json();
+
+                if (data.success) {
+                    const capturaResp = await fetch('@Url.Action("CapturarOrdenPayPal", "Pago")', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: `pedidoId=@Model.PedidoId&orderId=${data.orderId}`
+                    });
+                    const capturaData = await capturaResp.json();
+
+                    if (capturaData.success) {
+                        window.location.href = capturaData.redirect;
+                    } else {
+                        alert('Error: ' + capturaData.message);
+                        btn.style.display = 'block';
+                        loading.style.display = 'none';
+                    }
+                } else {
+                    alert('Error: ' + data.message);
+                    btn.style.display = 'block';
+                    loading.style.display = 'none';
+                }
+            } catch (err) {
+                alert('Error de conexion: ' + err.message);
+                btn.style.display = 'block';
+                loading.style.display = 'none';
+            }
+        }
+    </script>
+
+}

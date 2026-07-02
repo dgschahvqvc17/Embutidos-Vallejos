@@ -1,0 +1,159 @@
+@model List<Embutidos_Vallejos.Models.DTOs.ProductoDto>
+@{
+    ViewData["Title"] = "Productos";
+    var categorias = ViewBag.Categorias as List<Embutidos_Vallejos.Models.DTOs.CategoriaDto>;
+}
+
+<div class="page-header">
+    <h1 class="page-title">Nuestros Productos</h1>
+    <p class="page-subtitle">Embutidos artesanales de la mejor calidad</p>
+</div>
+
+<div class="category-tabs mb-4">
+    <a asp-action="Index" class="cat-tab @(ViewBag.CategoriaActual == null ? "active" : "")">Todos</a>
+    @if (categorias != null)
+    {
+        @foreach (var cat in categorias)
+        {
+            <a asp-action="Index" asp-route-categoriaId="@cat.CategoriaId"
+               class="cat-tab @(ViewBag.CategoriaActual == cat.CategoriaId ? "active" : "")">
+                @cat.Nombre
+            </a>
+        }
+    }
+</div>
+
+<div class="row g-4">
+    @foreach (var prod in Model)
+    {
+        <div class="col-lg-3 col-md-4 col-6 animate-fade-up">
+            <div class="product-card glass-panel glow-border" data-id="@prod.ProductoId">
+                <div class="product-img-wrapper">
+                    <img src="@(prod.Imagen ?? "/img/LogoVallejos.png")" alt="@prod.Nombre" class="product-img" />
+                    @if (prod.StockBajo && prod.Stock > 0)
+                    {
+                        <span class="product-badge badge-warning">Pocas unidades</span>
+                    }
+                    else if (prod.Stock == 0)
+                    {
+                        <span class="product-badge badge-danger">Agotado</span>
+                    }
+                </div>
+                <div class="product-info">
+                    <span class="product-category">@prod.NombreCategoria</span>
+                    <h3 class="product-name glow-text">@prod.Nombre</h3>
+                    <p class="product-price">@prod.PrecioVenta.ToString("C", new System.Globalization.CultureInfo("es-BO"))</p>
+                    <div class="product-stock-info">
+                        @if (prod.Stock > 0)
+                        {
+                            <span class="stock-indicator @(prod.StockBajo ? "stock-low" : "stock-ok")">
+                                <i class="fa-solid @(prod.StockBajo ? "fa-circle-exclamation" : "fa-circle")"></i>
+                                @prod.Stock en stock
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="stock-indicator stock-out">
+                                <i class="fa-solid fa-circle"></i> Sin stock
+                            </span>
+                        }
+                    </div>
+                    @if (prod.Stock > 0)
+                    {
+                        <div class="d-flex gap-2">
+                            <div class="qty-selector-sm">
+                                <button type="button" class="qty-sm-btn" onclick="changeGridQty(@prod.ProductoId, -1, this)">
+                                    <i class="fa-solid fa-minus"></i>
+                                </button>
+                                <input type="number" class="product-qty" value="1" min="1" max="@prod.Stock" readonly id="qty-@prod.ProductoId" />
+                                <button type="button" class="qty-sm-btn" onclick="changeGridQty(@prod.ProductoId, 1, this)">
+                                    <i class="fa-solid fa-plus"></i>
+                                </button>
+                            </div>
+                            <button class="btn-premium btn-add-cart" onclick="addToCart(@prod.ProductoId, this)">
+                                <i class="fa-solid fa-cart-plus"></i> <span>Agregar</span>
+                            </button>
+                        </div>
+                    }
+                    else
+                    {
+                        <button class="btn-disabled" disabled>
+                            <i class="fa-solid fa-ban"></i> Agotado
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function changeGridQty(productoId, delta, btn) {
+            const input = document.getElementById('qty-' + productoId);
+            let val = parseInt(input.value) + delta;
+            const max = parseInt(input.max);
+            if (val < 1) val = 1;
+            if (val > max) val = max;
+            input.value = val;
+        }
+
+        function addToCart(productoId, btn) {
+            const qty = document.getElementById('qty-' + productoId).value;
+            const originalHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.style.opacity = '0.7';
+            fetch('@Url.Action("Agregar", "Carrito")', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `productoId=${productoId}&cantidad=${qty}`
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    btn.innerHTML = '<i class="fa-solid fa-check"></i> <span>Agregado</span>';
+                    btn.style.background = 'linear-gradient(135deg, #16a34a 0%, #22c55e 100%)';
+                    btn.style.opacity = '1';
+                    setTimeout(() => {
+                        btn.innerHTML = originalHtml;
+                        btn.style.background = '';
+                        btn.style.opacity = '';
+                        btn.disabled = false;
+                    }, 1800);
+                    updateCartCount();
+                } else {
+                    alert(data.message);
+                    btn.innerHTML = originalHtml;
+                    btn.style.opacity = '';
+                    btn.disabled = false;
+                }
+            });
+        }
+
+        function updateCartCount() {
+            fetch('@Url.Action("ObtenerConteo", "Carrito")')
+                .then(r => r.json())
+                .then(data => {
+                    const badge = document.getElementById('cart-count');
+                    if (badge) {
+                        badge.textContent = data.count;
+                        badge.style.display = data.count > 0 ? 'flex' : 'none';
+                    }
+                    const fab = document.getElementById('cart-fab');
+                    if (fab) {
+                        fab.style.display = data.count > 0 ? 'flex' : 'none';
+                        document.getElementById('cart-fab-count').textContent = data.count;
+                    }
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', updateCartCount);
+    </script>
+
+}
+
+<a id="cart-fab" asp-controller="Carrito" asp-action="Index" class="cart-fab">
+    <i class="fa-solid fa-bag-shopping"></i>
+    <span>Ver Carrito</span>
+    <span id="cart-fab-count" class="cart-fab-badge">0</span>
+</a>

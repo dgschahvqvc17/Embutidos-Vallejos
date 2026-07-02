@@ -1,0 +1,107 @@
+@model Embutidos_Vallejos.Models.DTOs.EmpleadoCreateDto
+@{
+    ViewData["Title"] = "Crear Empleado";
+    var roles = new[] { "Administrador", "Producción", "Ventas", "Almacén", "Repartidor" };
+}
+
+<div class="form-page">
+    <div class="form-card">
+        <div class="form-header">
+            <a asp-action="Empleados" class="btn-back"><i class="fa-solid fa-arrow-left"></i></a>
+            <h2>Crear Nuevo Empleado</h2>
+            <p>Registra un nuevo miembro del equipo</p>
+        </div>
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert-custom alert-error-custom">@TempData["Error"]</div>
+        }
+
+        <form asp-action="CrearEmpleado" method="post">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="Nombre" class="form-label-custom"></label>
+                    <input asp-for="Nombre" class="form-control-custom" placeholder="Nombre del empleado" />
+                    <span asp-validation-for="Nombre" class="text-validation"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Apellido" class="form-label-custom"></label>
+                    <input asp-for="Apellido" class="form-control-custom" placeholder="Apellido del empleado" />
+                    <span asp-validation-for="Apellido" class="text-validation"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Email" class="form-label-custom"></label>
+                    <input asp-for="Email" class="form-control-custom" placeholder="correo@empresa.com" />
+                    <span asp-validation-for="Email" class="text-validation"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Telefono" class="form-label-custom"></label>
+                    <div class="input-group phone-wrapper">
+                        <span class="phone-prefix">+591</span>
+                        <input asp-for="Telefono" class="form-control-custom phone-input" id="empTel" placeholder="70000000" maxlength="12" value="+591" />
+                    </div>
+                    <span asp-validation-for="Telefono" class="text-validation"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Password" class="form-label-custom"></label>
+                    <div class="input-group">
+                        <input asp-for="Password" class="form-control-custom" id="empPwd" placeholder="Min. 6 caracteres" type="password" />
+                        <button type="button" class="toggle-password-custom" onclick="togglePwd('empPwd','empPwdIcon')">
+                            <i class="fa-regular fa-eye" id="empPwdIcon"></i>
+                        </button>
+                    </div>
+                    <span asp-validation-for="Password" class="text-validation"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="FechaContratacion" class="form-label-custom"></label>
+                    <input asp-for="FechaContratacion" class="form-control-custom" type="date" />
+                    <span asp-validation-for="FechaContratacion" class="text-validation"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Estado" class="form-label-custom"></label>
+                    <select asp-for="Estado" class="form-control-custom">
+                        <option value="Activo">Activo</option>
+                        <option value="Inactivo">Inactivo</option>
+                        <option value="Vacaciones">Vacaciones</option>
+                    </select>
+                    <span asp-validation-for="Estado" class="text-validation"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="RolId" class="form-label-custom">Rol</label>
+                    <select asp-for="RolId" class="form-control-custom" id="rolSelect" onchange="togglePlaca()">
+                        <option value="" disabled selected>Seleccionar rol...</option>
+                        <option value="1">Administrador</option>
+                        <option value="2">Producción</option>
+                        <option value="3">Ventas</option>
+                        <option value="4">Almacén</option>
+                        <option value="5">Repartidor</option>
+                    </select>
+                    <span asp-validation-for="RolId" class="text-validation"></span>
+                </div>
+                <div class="col-md-6" id="placaField" style="display:none;">
+                    <label asp-for="PlacaVehiculo" class="form-label-custom">Placa del Vehículo</label>
+                    <input asp-for="PlacaVehiculo" class="form-control-custom" placeholder="ABC-1234" />
+                    <span asp-validation-for="PlacaVehiculo" class="text-validation"></span>
+                </div>
+            </div>
+
+            <div class="form-footer">
+                <a asp-action="Empleados" class="btn-cancel">Cancelar</a>
+                <button type="submit" class="btn-submit">
+                    <i class="fa-solid fa-user-plus me-2"></i> Crear Empleado
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+
+    <script>
+        function togglePlaca() {
+            var rol = document.getElementById('rolSelect').value;
+            document.getElementById('placaField').style.display = rol === '5' ? 'block' : 'none';
+        }
+        document.addEventListener('DOMContentLoaded', function(){ setupPhoneInput('empTel'); togglePlaca(); });
+    </script>
+}

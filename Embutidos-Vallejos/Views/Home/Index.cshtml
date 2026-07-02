@@ -1,0 +1,166 @@
+@model Embutidos_Vallejos.Models.DTOs.DashboardDto?
+@{
+    ViewData["Title"] = "Inicio";
+    ViewData["FullWidth"] = true;
+}
+
+<div class="home-video-page">
+    <video class="home-video-bg" autoplay muted loop playsinline>
+        <source src="~/video/video1.mp4" type="video/mp4" />
+    </video>
+    <div class="home-video-overlay"></div>
+
+    <div class="home-hero">
+        <div class="home-hero-content">
+            <h1 class="home-hero-title animate-in">
+                <span class="home-hero-brand-name glow-text">Embutidos Vallejos</span>
+            </h1>
+            <p class="home-hero-subtitle animate-in animate-in-delay-1">
+                Tradicion y calidad en cada bocado. Descubre nuestra amplia seleccion de embutidos
+                artesanales elaborados con los mejores ingredientes.
+            </p>
+
+            <div class="home-hero-btns animate-in animate-in-delay-2">
+                @if (User.Identity?.IsAuthenticated != true)
+                {
+                    <a asp-controller="Account" asp-action="Login" class="btn-premium home-btn-primary">
+                        <i class="fa-regular fa-arrow-right-to-bracket"></i> Iniciar Sesion
+                    </a>
+                    <a asp-controller="Account" asp-action="Register" class="btn-premium btn-premium-accent home-btn-secondary">
+                        <i class="fa-regular fa-user-plus"></i> Crear Cuenta
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="Producto" asp-action="Index" class="btn-premium home-btn-primary">
+                        <i class="fa-solid fa-store"></i> Ver Productos
+                    </a>
+                }
+            </div>
+        </div>
+
+        <div class="home-scroll-indicator">
+            <span>Descubre mas</span>
+            <i class="fa-solid fa-chevron-down"></i>
+        </div>
+    </div>
+
+    <section class="home-about" id="about">
+        <div class="home-about-inner">
+            <h2 class="home-about-title animate-in">Nuestra <span>Historia</span></h2>
+            <div class="home-about-divider"></div>
+            <p class="home-about-text animate-in animate-in-delay-1">
+                La embutidora Vallejos, está ubicada en la zona de la Avenida Blanco Galindo Km 6 de Cochabamba,
+                realiza la comercialización y distribución de embutidos mediante procesos parcialmente manuales,
+                garantizando la calidad y el sabor artesanal que nos caracteriza. Cada producto es elaborado con
+                ingredientes seleccionados y recetas tradicionales que han sido perfeccionadas a lo largo de los años.
+            </p>
+
+            <div class="home-about-grid">
+                <div class="home-about-card glass-panel glow-border animate-in animate-in-delay-1">
+                    <div class="home-card-icon home-card-icon-red">
+                        <i class="fa-solid fa-bullseye"></i>
+                    </div>
+                    <h3>Misión</h3>
+                    <p>
+                        Producir y comercializar embutidos de alta calidad, combinando procesos artesanales con
+                        estándares modernos de higiene y seguridad alimentaria, para satisfacer las necesidades
+                        de nuestros clientes en Cochabamba y todo el país.
+                    </p>
+                </div>
+                <div class="home-about-card glass-panel glow-border animate-in animate-in-delay-2">
+                    <div class="home-card-icon home-card-icon-gold">
+                        <i class="fa-solid fa-eye"></i>
+                    </div>
+                    <h3>Visión</h3>
+                    <p>
+                        Ser la embutidora líder en Bolivia, reconocida por la excelencia de nuestros productos,
+                        la innovación en nuestros procesos y el compromiso con la tradición culinaria boliviana,
+                        expandiendo nuestro alcance a nuevos mercados internacionales.
+                    </p>
+                </div>
+                <div class="home-about-card glass-panel glow-border animate-in animate-in-delay-3">
+                    <div class="home-card-icon home-card-icon-green">
+                        <i class="fa-solid fa-handshake"></i>
+                    </div>
+                    <h3>Valores</h3>
+                    <p>
+                        Calidad en cada producto, compromiso con nuestros clientes, responsabilidad en nuestros
+                        procesos, pasión por la tradición culinaria, trabajo en equipo, y respeto por el medio
+                        ambiente y la comunidad.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    @if (Model != null)
+    {
+        <section class="home-dashboard">
+            <div class="container">
+                <h2 class="home-about-title" style="color:#fff;">Panel de Control</h2>
+                <div class="home-about-divider"></div>
+                <div class="row g-4 mt-4">
+                    <div class="col-md-3 col-6 animate-in animate-in-delay-1">
+                        <div class="card-dashboard glass-panel glow-border">
+                            <div class="icon icon-red"><i class="fa-solid fa-cubes"></i></div>
+                            <h3>@Model.TotalProductos</h3>
+                            <p>Productos</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6 animate-in animate-in-delay-2">
+                        <div class="card-dashboard glass-panel glow-border">
+                            <div class="icon icon-gold"><i class="fa-solid fa-truck"></i></div>
+                            <h3>@Model.TotalPedidos</h3>
+                            <p>Pedidos</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6 animate-in animate-in-delay-3">
+                        <div class="card-dashboard glass-panel glow-border">
+                            <div class="icon icon-green"><i class="fa-solid fa-check-circle"></i></div>
+                            <h3>@Model.PedidosEntregados</h3>
+                            <p>Entregados</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6 animate-in animate-in-delay-4">
+                        <div class="card-dashboard glass-panel glow-border">
+                            <div class="icon icon-blue"><i class="fa-solid fa-users"></i></div>
+                            <h3>@Model.TotalClientes</h3>
+                            <p>Clientes</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    }
+
+    <footer class="home-footer">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="mb-0">&copy; @DateTime.Now.Year - Embutidos Vallejos &mdash; Sabor que trasciende</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a asp-area="" asp-controller="Home" asp-action="Privacy" class="home-footer-link">Privacidad</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</div>
+
+@section Scripts {
+    <script>
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationPlayState = 'running';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.animate-in').forEach(el => {
+            el.style.animationPlayState = 'paused';
+            observer.observe(el);
+        });
+    </script>
+}

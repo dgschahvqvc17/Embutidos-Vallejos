@@ -1,0 +1,63 @@
+@model Embutidos_Vallejos.Models.DTOs.VentaDto
+@{
+    ViewData["Title"] = "Pago QR - Venta #" + Model.VentaId;
+    var qrCode = ViewBag.QRCode as string;
+    var referencia = ViewBag.Referencia as string;
+    var ventaId = ViewBag.VentaId as int? ?? Model.VentaId;
+}
+
+<div class="page-header text-center">
+    <h1 class="page-title">Pago con Codigo QR</h1>
+    <p class="page-subtitle">Venta Presencial #@ventaId</p>
+</div>
+
+<div class="qr-container">
+    <div class="qr-card">
+        <div class="qr-header">
+            <i class="fa-solid fa-qrcode qr-header-icon"></i>
+            <h2>Escanea el QR para pagar</h2>
+            <p>Muestra este codigo al cliente para que realice el pago desde su aplicacion bancaria</p>
+        </div>
+
+        <div class="qr-body">
+            <div class="qr-code-wrapper">
+                <img src="data:image/png;base64,@qrCode" alt="QR de pago" class="qr-code-img" />
+            </div>
+
+            <div class="qr-info">
+                <div class="qr-info-row">
+                    <span>Venta #</span>
+                    <strong>@ventaId</strong>
+                </div>
+                <div class="qr-info-row">
+                    <span>Total</span>
+                    <strong class="qr-amount">Bs @Model.Total.ToString("N2")</strong>
+                </div>
+                <div class="qr-info-row">
+                    <span>Referencia</span>
+                    <strong style="font-size:12px;word-break:break-all;">@referencia</strong>
+                </div>
+                <div class="qr-info-row">
+                    <span>Cliente</span>
+                    <strong>@(Model.NombreCliente ?? "Mostrador")</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="qr-actions">
+            <form asp-action="ConfirmarQRVenta" asp-controller="Pago" method="post" style="width:100%;">
+                <input type="hidden" name="ventaId" value="@ventaId" />
+                <button type="submit" class="btn-pago-confirmado">
+                    <i class="fa-regular fa-circle-check me-2"></i> Confirmar Pago
+                </button>
+            </form>
+            <a asp-action="Index" asp-controller="Ventas" class="btn-volver">
+                <i class="fa-regular fa-arrow-left me-1"></i> Volver
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+}
