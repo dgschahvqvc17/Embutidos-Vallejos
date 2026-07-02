@@ -1,4 +1,4 @@
-@model List<Embutidos_Vallejos.Models.DTOs.EntregaDto>
+    @model List<Embutidos_Vallejos.Models.DTOs.EntregaDto>
 @{
     ViewData["Title"] = "Repartidor - Entregas";
 }
@@ -22,7 +22,7 @@
 @if (!Model.Any())
 {
     <div class="empty-state">
-        <i class="fa-solid fa-truck-fast"></i>
+        <i class="bi bi-truck-flatbed"></i>
         <h3>No hay entregas pendientes</h3>
         <p>Todas las entregas han sido completadas.</p>
     </div>
@@ -69,7 +69,7 @@ else
                         {
                             <form asp-action="IniciarEntrega" asp-route-id="@entrega.EntregaId" method="post">
                                 <button type="submit" class="btn btn-outline-success btn-sm w-100">
-                                    <i class="fa-solid fa-play me-1"></i> Iniciar Entrega
+                                    <i class="bi bi-play-fill me-1"></i> Iniciar Entrega
                                 </button>
                             </form>
                         }
@@ -77,7 +77,7 @@ else
                         {
                             <button type="button" class="btn btn-outline-primary btn-sm w-100"
                                     data-bs-toggle="modal" data-bs-target="#completarModal-@entrega.EntregaId">
-                                <i class="fa-solid fa-check me-1"></i> Completar Entrega
+                                <i class="bi bi-check-lg me-1"></i> Completar Entrega
                             </button>
                         }
                     </div>
@@ -101,7 +101,7 @@ else
                             <div class="modal-footer">
                                 <button type="button" class="btn-cancel" data-bs-dismiss="modal">Cancelar</button>
                                 <button type="submit" class="btn-submit-sm">
-                                    <i class="fa-solid fa-check me-1"></i> Completar
+                                    <i class="bi bi-check-lg me-1"></i> Completar
                                 </button>
                             </div>
                         </form>

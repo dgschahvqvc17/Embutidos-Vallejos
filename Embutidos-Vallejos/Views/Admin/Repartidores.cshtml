@@ -9,7 +9,7 @@
         <p class="admin-subtitle">Gestion del equipo de reparto</p>
     </div>
     <button type="button" class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#createModal">
-        <i class="fa-solid fa-plus me-2"></i> Nuevo Repartidor
+        <i class="bi bi-plus-lg me-2"></i> Nuevo Repartidor
     </button>
 </div>
 
@@ -85,12 +85,12 @@
                         <div class="action-btns">
                             <button type="button" class="btn-icon btn-edit" title="Editar"
                                     data-bs-toggle="modal" data-bs-target="#editModal-@r.RepartidorId">
-                                <i class="fa-solid fa-pen"></i>
+                                <i class="bi bi-pencil"></i>
                             </button>
                             <form asp-action="EliminarRepartidor" asp-route-id="@r.RepartidorId" method="post" class="d-inline"
                                   onsubmit="return confirm('¿Eliminar repartidor @r.Nombre @r.Apellido?')">
                                 <button type="submit" class="btn-icon btn-delete" title="Eliminar">
-                                    <i class="fa-solid fa-trash-can"></i>
+                                    <i class="bi bi-trash"></i>
                                 </button>
                             </form>
                         </div>
@@ -182,7 +182,7 @@
                             <div class="input-group">
                                 <input name="Password" type="password" class="form-control-custom" id="createRepPwd" placeholder="Min. 6 caracteres" required />
                                 <button type="button" class="password-toggle-btn" onclick="togglePwd('createRepPwd','createRepPwdIcon')" style="right:12px;">
-                                    <i class="fa-regular fa-eye" id="createRepPwdIcon"></i>
+                                    <i class="bi bi-eye" id="createRepPwdIcon"></i>
                                 </button>
                             </div>
                         </div>

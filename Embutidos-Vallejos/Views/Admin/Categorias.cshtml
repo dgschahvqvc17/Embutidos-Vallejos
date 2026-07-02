@@ -9,7 +9,7 @@
         <p class="admin-subtitle">Clasificacion de productos</p>
     </div>
     <button type="button" class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#createModal">
-        <i class="fa-solid fa-plus me-2"></i> Nueva Categoria
+        <i class="bi bi-plus-lg me-2"></i> Nueva Categoria
     </button>
 </div>
 
@@ -45,12 +45,12 @@
                         <div class="action-btns">
                             <button type="button" class="btn-icon btn-edit" title="Editar"
                                     data-bs-toggle="modal" data-bs-target="#editModal-@cat.CategoriaId">
-                                <i class="fa-solid fa-pen"></i>
+                                <i class="bi bi-pencil"></i>
                             </button>
                             <form asp-action="EliminarCategoria" asp-route-id="@cat.CategoriaId" method="post" class="d-inline"
                                   onsubmit="return confirm('¿Eliminar categoria @cat.Nombre?')">
                                 <button type="submit" class="btn-icon btn-delete" title="Eliminar">
-                                    <i class="fa-solid fa-trash-can"></i>
+                                    <i class="bi bi-trash"></i>
                                 </button>
                             </form>
                         </div>

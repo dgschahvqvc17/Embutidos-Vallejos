@@ -24,16 +24,16 @@
                 @if (User.Identity?.IsAuthenticated != true)
                 {
                     <a asp-controller="Account" asp-action="Login" class="btn-premium home-btn-primary">
-                        <i class="fa-regular fa-arrow-right-to-bracket"></i> Iniciar Sesion
+                        <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesion
                     </a>
                     <a asp-controller="Account" asp-action="Register" class="btn-premium btn-premium-accent home-btn-secondary">
-                        <i class="fa-regular fa-user-plus"></i> Crear Cuenta
+                        <i class="bi bi-person-plus"></i> Crear Cuenta
                     </a>
                 }
                 else
                 {
                     <a asp-controller="Producto" asp-action="Index" class="btn-premium home-btn-primary">
-                        <i class="fa-solid fa-store"></i> Ver Productos
+                        <i class="bi bi-shop"></i> Ver Productos
                     </a>
                 }
             </div>
@@ -41,7 +41,7 @@
 
         <div class="home-scroll-indicator">
             <span>Descubre mas</span>
-            <i class="fa-solid fa-chevron-down"></i>
+            <i class="bi bi-chevron-down"></i>
         </div>
     </div>
 
@@ -59,7 +59,7 @@
             <div class="home-about-grid">
                 <div class="home-about-card glass-panel glow-border animate-in animate-in-delay-1">
                     <div class="home-card-icon home-card-icon-red">
-                        <i class="fa-solid fa-bullseye"></i>
+                        <i class="bi bi-bullseye"></i>
                     </div>
                     <h3>Misión</h3>
                     <p>
@@ -70,7 +70,7 @@
                 </div>
                 <div class="home-about-card glass-panel glow-border animate-in animate-in-delay-2">
                     <div class="home-card-icon home-card-icon-gold">
-                        <i class="fa-solid fa-eye"></i>
+                        <i class="bi bi-eye"></i>
                     </div>
                     <h3>Visión</h3>
                     <p>
@@ -81,7 +81,7 @@
                 </div>
                 <div class="home-about-card glass-panel glow-border animate-in animate-in-delay-3">
                     <div class="home-card-icon home-card-icon-green">
-                        <i class="fa-solid fa-handshake"></i>
+                        <i class="bi bi-handshake"></i>
                     </div>
                     <h3>Valores</h3>
                     <p>
@@ -103,28 +103,28 @@
                 <div class="row g-4 mt-4">
                     <div class="col-md-3 col-6 animate-in animate-in-delay-1">
                         <div class="card-dashboard glass-panel glow-border">
-                            <div class="icon icon-red"><i class="fa-solid fa-cubes"></i></div>
+                            <div class="icon icon-red"><i class="bi bi-boxes"></i></div>
                             <h3>@Model.TotalProductos</h3>
                             <p>Productos</p>
                         </div>
                     </div>
                     <div class="col-md-3 col-6 animate-in animate-in-delay-2">
                         <div class="card-dashboard glass-panel glow-border">
-                            <div class="icon icon-gold"><i class="fa-solid fa-truck"></i></div>
+                            <div class="icon icon-gold"><i class="bi bi-truck"></i></div>
                             <h3>@Model.TotalPedidos</h3>
                             <p>Pedidos</p>
                         </div>
                     </div>
                     <div class="col-md-3 col-6 animate-in animate-in-delay-3">
                         <div class="card-dashboard glass-panel glow-border">
-                            <div class="icon icon-green"><i class="fa-solid fa-check-circle"></i></div>
+                            <div class="icon icon-green"><i class="bi bi-check-circle"></i></div>
                             <h3>@Model.PedidosEntregados</h3>
                             <p>Entregados</p>
                         </div>
                     </div>
                     <div class="col-md-3 col-6 animate-in animate-in-delay-4">
                         <div class="card-dashboard glass-panel glow-border">
-                            <div class="icon icon-blue"><i class="fa-solid fa-users"></i></div>
+                            <div class="icon icon-blue"><i class="bi bi-people"></i></div>
                             <h3>@Model.TotalClientes</h3>
                             <p>Clientes</p>
                         </div>
