@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Embutidos-Vallejos")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4a76967b5fdfd31b5560a0fe03da02a5b48b0a95")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+366a4d79cbf1c306d2a3638d351118e12ecaf0fc")]
 [assembly: System.Reflection.AssemblyProductAttribute("Embutidos-Vallejos")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Embutidos-Vallejos")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
