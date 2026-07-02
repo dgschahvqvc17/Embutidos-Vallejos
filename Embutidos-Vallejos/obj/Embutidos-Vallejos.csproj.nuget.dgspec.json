@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Windows 10\\Desktop\\Proyectos\\Embutidos-Vallejos\\embutidos-vallejos\\Embutidos-Vallejos.csproj": {}
+    "C:\\Users\\Windows 10\\Desktop\\Proyectos\\Embutidos-Vallejos\\Embutidos-Vallejos\\Embutidos-Vallejos.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Windows 10\\Desktop\\Proyectos\\Embutidos-Vallejos\\embutidos-vallejos\\Embutidos-Vallejos.csproj": {
+    "C:\\Users\\Windows 10\\Desktop\\Proyectos\\Embutidos-Vallejos\\Embutidos-Vallejos\\Embutidos-Vallejos.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Windows 10\\Desktop\\Proyectos\\Embutidos-Vallejos\\embutidos-vallejos\\Embutidos-Vallejos.csproj",
+        "projectUniqueName": "C:\\Users\\Windows 10\\Desktop\\Proyectos\\Embutidos-Vallejos\\Embutidos-Vallejos\\Embutidos-Vallejos.csproj",
         "projectName": "Embutidos-Vallejos",
-        "projectPath": "C:\\Users\\Windows 10\\Desktop\\Proyectos\\Embutidos-Vallejos\\embutidos-vallejos\\Embutidos-Vallejos.csproj",
+        "projectPath": "C:\\Users\\Windows 10\\Desktop\\Proyectos\\Embutidos-Vallejos\\Embutidos-Vallejos\\Embutidos-Vallejos.csproj",
         "packagesPath": "C:\\Users\\Windows 10\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Windows 10\\Desktop\\Proyectos\\Embutidos-Vallejos\\embutidos-vallejos\\obj\\",
+        "outputPath": "C:\\Users\\Windows 10\\Desktop\\Proyectos\\Embutidos-Vallejos\\Embutidos-Vallejos\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
