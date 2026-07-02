@@ -12,7 +12,7 @@
             </div>
             <div class="stripe-sim-badge glass-panel-light" style="display:inline-block; padding:3px 14px; border-radius:20px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:#635bff; margin-bottom:14px;">Modo Prueba</div>
             <h2 class="stripe-title" style="font-family:var(--font-display); font-size:26px; font-weight:900; margin:0 0 6px;">Completar Pago</h2>
-            <p class="stripe-amount" style="font-size:36px; font-weight:800; color:var(--accent); margin:0 0 4px; text-shadow: 0 0 20px rgba(201,169,78,0.35);">@Model.Total.ToString("C", new System.Globalization.CultureInfo("es-BO"))</p>
+            <p class="stripe-amount" style="font-size:36px; font-weight:800; color:var(--accent); margin:0 0 4px; text-shadow: 0 0 20px rgba(201,169,78,0.35);">@Model.Total.ToString("C", new System.Globalization.CultureInfo("en-US"))</p>
             <p class="stripe-subtitle" style="color:var(--text-muted); font-size:12px; margin:0;">Pedido #@Model.PedidoId.ToString("D6")</p>
         </div>
 
@@ -61,7 +61,7 @@
             </div>
 
             <button type="submit" class="btn-stripe-pay" id="payBtn" style="background: linear-gradient(135deg, #635bff, #4f46e5); border:none; border-radius:var(--radius-sm); color:#fff; font-size:15px; font-weight:700; padding:14px; width:100%; cursor:pointer; transition:all 0.3s ease; display:flex; align-items:center; justify-content:center; gap:8px; letter-spacing:0.5px;">
-                <i class="fa-solid fa-lock"></i> Pagar @Model.Total.ToString("C", new System.Globalization.CultureInfo("es-BO"))
+                <i class="fa-solid fa-lock"></i> Pagar @Model.Total.ToString("C", new System.Globalization.CultureInfo("en-US"))
             </button>
 
             <a asp-controller="Pedido" asp-action="Details" asp-route-id="@Model.PedidoId" class="btn-stripe-cancel" style="display:block; text-align:center; margin-top:14px; font-size:12px; color:var(--text-muted); text-decoration:none; transition:color 0.2s;">

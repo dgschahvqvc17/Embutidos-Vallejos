@@ -331,15 +331,15 @@
                                 <td style="text-align:center;">
                                     <span style="background:var(--bg-elevated); border:1px solid var(--border-color); border-radius:4px; padding:2px 10px; font-size:12px; font-weight:700;">@d.Cantidad</span>
                                 </td>
-                                <td style="text-align:right; color:var(--text-secondary);">@d.PrecioUnitario.ToString("C", new System.Globalization.CultureInfo("es-BO"))</td>
-                                <td>@d.Subtotal.ToString("C", new System.Globalization.CultureInfo("es-BO"))</td>
+                                <td style="text-align:right; color:var(--text-secondary);">@d.PrecioUnitario.ToString("C", new System.Globalization.CultureInfo("en-US"))</td>
+                                <td>@d.Subtotal.ToString("C", new System.Globalization.CultureInfo("en-US"))</td>
                             </tr>
                         }
                     </tbody>
                 </table>
                 <div class="receipt-total">
                     <span>TOTAL A PAGAR</span>
-                    <span class="receipt-total-value">@Model.Monto.ToString("C", new System.Globalization.CultureInfo("es-BO"))</span>
+                    <span class="receipt-total-value">@Model.Monto.ToString("C", new System.Globalization.CultureInfo("en-US"))</span>
                 </div>
             </div>
 

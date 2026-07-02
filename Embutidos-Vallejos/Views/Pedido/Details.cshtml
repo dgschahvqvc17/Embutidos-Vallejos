@@ -14,12 +14,24 @@
     </div>
     @switch (Model.Estado)
     {
-        case "Pendiente": <span class="order-badge-large badge-pending">Pendiente</span>; break;
-        case "Pagado": <span class="order-badge-large badge-paid">Pagado</span>; break;
-        case "En Preparacion": <span class="order-badge-large badge-progress">En Preparacion</span>; break;
-        case "En Camino": <span class="order-badge-large badge-shipping">En Camino</span>; break;
-        case "Entregado": <span class="order-badge-large badge-delivered">Entregado</span>; break;
-        case "Cancelado": <span class="order-badge-large badge-canceled">Cancelado</span>; break;
+        case "Pendiente":
+            <span class="order-badge-large badge-pending">Pendiente</span>
+            break;
+        case "Pagado":
+            <span class="order-badge-large badge-paid">Pagado</span>
+            break;
+        case "En Preparacion":
+            <span class="order-badge-large badge-progress">En Preparacion</span>
+            break;
+        case "En Camino":
+            <span class="order-badge-large badge-shipping">En Camino</span>
+            break;
+        case "Entregado":
+            <span class="order-badge-large badge-delivered">Entregado</span>
+            break;
+        case "Cancelado":
+            <span class="order-badge-large badge-canceled">Cancelado</span>
+            break;
     }
 </div>
 
@@ -51,15 +63,15 @@
                         <tr>
                             <td>@d.NombreProducto</td>
                             <td>@d.Cantidad</td>
-                            <td>@d.PrecioUnitario.ToString("C", new System.Globalization.CultureInfo("es-BO"))</td>
-                            <td>@d.Subtotal.ToString("C", new System.Globalization.CultureInfo("es-BO"))</td>
+                            <td>@d.PrecioUnitario.ToString("C", new System.Globalization.CultureInfo("en-US"))</td>
+                            <td>@d.Subtotal.ToString("C", new System.Globalization.CultureInfo("en-US"))</td>
                         </tr>
                     }
                 </tbody>
             </table>
             <div class="detail-total">
                 <span>Total</span>
-                <span class="total-value">@Model.Total.ToString("C", new System.Globalization.CultureInfo("es-BO"))</span>
+                <span class="total-value">@Model.Total.ToString("C", new System.Globalization.CultureInfo("en-US"))</span>
             </div>
         </div>
     </div>

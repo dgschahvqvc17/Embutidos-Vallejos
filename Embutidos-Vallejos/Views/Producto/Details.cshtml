@@ -15,7 +15,7 @@
         <div class="col-md-7 animate-fade-up" style="animation-delay: 0.1s;">
             <span class="product-detail-category">@Model.NombreCategoria</span>
             <h1 class="product-detail-title glow-text">@Model.Nombre</h1>
-            <p class="product-detail-price">@Model.PrecioVenta.ToString("C", new System.Globalization.CultureInfo("es-BO"))</p>
+            <p class="product-detail-price">@Model.PrecioVenta.ToString("C", new System.Globalization.CultureInfo("en-US"))</p>
 
             @if (!string.IsNullOrEmpty(Model.Descripcion))
             {

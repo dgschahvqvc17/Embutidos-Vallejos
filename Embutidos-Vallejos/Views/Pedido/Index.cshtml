@@ -39,7 +39,7 @@ else
                 <div class="pedido-body">
                     <div class="pedido-info">
                         <span class="pedido-date">@p.FechaPedido.ToString("dd/MM/yyyy HH:mm")</span>
-                        <span class="pedido-total">@p.Total.ToString("C", new System.Globalization.CultureInfo("es-BO"))</span>
+                        <span class="pedido-total">@p.Total.ToString("C", new System.Globalization.CultureInfo("en-US"))</span>
                     </div>
                     <div class="pedido-products">
                         @string.Join(", ", p.Detalles.Select(d => $"{d.NombreProducto} x{d.Cantidad}"))

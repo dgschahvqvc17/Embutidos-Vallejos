@@ -42,7 +42,7 @@
                 <div class="product-info">
                     <span class="product-category">@prod.NombreCategoria</span>
                     <h3 class="product-name glow-text">@prod.Nombre</h3>
-                    <p class="product-price">@prod.PrecioVenta.ToString("C", new System.Globalization.CultureInfo("es-BO"))</p>
+                    <p class="product-price">@prod.PrecioVenta.ToString("C", new System.Globalization.CultureInfo("en-US"))</p>
                     <div class="product-stock-info">
                         @if (prod.Stock > 0)
                         {

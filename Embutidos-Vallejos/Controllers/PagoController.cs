@@ -38,6 +38,7 @@ public class PagoController : Controller
         var pedido = await _pedidoService.GetByIdAsync(pedidoId);
         if (pedido == null) return NotFound();
 
+        ViewBag.PayPalClientId = _config["PayPal:ClientId"];
         return View(pedido);
     }
 
@@ -49,7 +50,7 @@ public class PagoController : Controller
 
         try
         {
-            var orderId = await _payPalService.CrearOrdenAsync(pedido.Total);
+            var (orderId, _) = await _payPalService.CrearOrdenAsync(pedido.Total, moneda: "USD");
             return Json(new { success = true, orderId });
         }
         catch (Exception ex)
@@ -63,9 +64,11 @@ public class PagoController : Controller
     {
         try
         {
-            var capturado = await _payPalService.CapturarOrdenAsync(orderId);
-            if (!capturado)
-                return Json(new { success = false, message = "Error al capturar el pago" });
+            var status = await _payPalService.CapturarOrdenAsync(orderId);
+            if (status != "COMPLETED")
+            {
+                return Json(new { success = false, message = $"PayPal no completó el pago (estado: {status})" });
+            }
 
             var pago = await _pagoService.GetByPedidoIdAsync(pedidoId);
             if (pago != null)
@@ -79,8 +82,43 @@ public class PagoController : Controller
         }
         catch (Exception ex)
         {
-            return Json(new { success = false, message = $"Error: {ex.Message}" });
+            return Json(new { success = false, message = $"Error al capturar pago PayPal: {ex.Message}" });
         }
+    }
+
+    public async Task<IActionResult> PayPalReturn(int pedidoId, string token)
+    {
+        try
+        {
+            var status = await _payPalService.CapturarOrdenAsync(token);
+            if (status != "COMPLETED")
+            {
+                TempData["Error"] = $"El pago PayPal no se completó (estado: {status}).";
+                return RedirectToAction("Details", "Pedido", new { id = pedidoId });
+            }
+
+            var pago = await _pagoService.GetByPedidoIdAsync(pedidoId);
+            if (pago != null)
+            {
+                await _pagoService.ConfirmarPagoAsync(pago.PagoId, token);
+            }
+
+            await _pedidoService.UpdateEstadoAsync(pedidoId, "Pagado");
+
+            TempData["Success"] = "Pago procesado exitosamente mediante PayPal.";
+            return RedirectToAction(nameof(Comprobante), new { pedidoId });
+        }
+        catch (Exception ex)
+        {
+            TempData["Error"] = $"Error al procesar el pago PayPal: {ex.Message}";
+            return RedirectToAction("Details", "Pedido", new { id = pedidoId });
+        }
+    }
+
+    public IActionResult PayPalCancel(int pedidoId)
+    {
+        TempData["Error"] = "El pago mediante PayPal fue cancelado por el usuario.";
+        return RedirectToAction("Details", "Pedido", new { id = pedidoId });
     }
 
     public async Task<IActionResult> QR(int pedidoId, int? ventaId, bool esVenta = false)

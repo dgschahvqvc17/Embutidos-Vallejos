@@ -25,13 +25,13 @@
                     </div>
                     <div class="col-4">
                         <div class="reporte-metric">
-                            <span class="metric-num text-red">@reporteVentas?.MontoTotal.ToString("C", new System.Globalization.CultureInfo("es-BO"))</span>
+                            <span class="metric-num text-red">@reporteVentas?.MontoTotal.ToString("C", new System.Globalization.CultureInfo("en-US"))</span>
                             <span class="metric-desc">Monto Total</span>
                         </div>
                     </div>
                     <div class="col-4">
                         <div class="reporte-metric">
-                            <span class="metric-num text-gold">@reporteVentas?.PromedioVenta.ToString("C", new System.Globalization.CultureInfo("es-BO"))</span>
+                            <span class="metric-num text-gold">@reporteVentas?.PromedioVenta.ToString("C", new System.Globalization.CultureInfo("en-US"))</span>
                             <span class="metric-desc">Promedio</span>
                         </div>
                     </div>
@@ -45,7 +45,7 @@
                         {
                             <div class="mini-row">
                                 <span>#@v.VentaId - @v.Cliente</span>
-                                <span class="text-red fw-bold">@v.Total.ToString("C", new System.Globalization.CultureInfo("es-BO"))</span>
+                                <span class="text-red fw-bold">@v.Total.ToString("C", new System.Globalization.CultureInfo("en-US"))</span>
                             </div>
                         }
                     </div>
@@ -83,7 +83,7 @@
 
                 <div class="mt-3">
                     <div class="reporte-metric">
-                        <span class="metric-num text-gold">@reporteInventario?.ValorInventario.ToString("C", new System.Globalization.CultureInfo("es-BO"))</span>
+                        <span class="metric-num text-gold">@reporteInventario?.ValorInventario.ToString("C", new System.Globalization.CultureInfo("en-US"))</span>
                         <span class="metric-desc">Valor del Inventario</span>
                     </div>
                 </div>
@@ -122,7 +122,7 @@
                     </div>
                     <div class="col-6">
                         <div class="reporte-metric">
-                            <span class="metric-num text-blue">@reporteVentas?.IngresoPedidos.ToString("C", new System.Globalization.CultureInfo("es-BO"))</span>
+                            <span class="metric-num text-blue">@reporteVentas?.IngresoPedidos.ToString("C", new System.Globalization.CultureInfo("en-US"))</span>
                             <span class="metric-desc">Ingreso por Pedidos</span>
                         </div>
                     </div>

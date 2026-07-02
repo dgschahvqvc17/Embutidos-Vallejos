@@ -52,7 +52,7 @@
                     </div>
                     <div class="info-item">
                         <span class="info-label">Total</span>
-                        <span class="info-value fw-bold text-red">@Model.Total.ToString("C", new System.Globalization.CultureInfo("es-BO"))</span>
+                        <span class="info-value fw-bold text-red">@Model.Total.ToString("C", new System.Globalization.CultureInfo("en-US"))</span>
                     </div>
                 </div>
 
@@ -72,8 +72,8 @@
                             <tr>
                                 <td>@d.NombreProducto</td>
                                 <td>@d.Cantidad</td>
-                                <td>@d.PrecioUnitario.ToString("C", new System.Globalization.CultureInfo("es-BO"))</td>
-                                <td>@d.Subtotal.ToString("C", new System.Globalization.CultureInfo("es-BO"))</td>
+                                <td>@d.PrecioUnitario.ToString("C", new System.Globalization.CultureInfo("en-US"))</td>
+                                <td>@d.Subtotal.ToString("C", new System.Globalization.CultureInfo("en-US"))</td>
                             </tr>
                         }
                     </tbody>

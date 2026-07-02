@@ -27,7 +27,7 @@ public class StripeService : IStripeService
                     PriceData = new SessionLineItemPriceDataOptions
                     {
                         UnitAmount = (long)(pedido.Total * 100), // Stripe requiere el monto en centavos
-                        Currency = "bob", // Bolivianos (BOB)
+                        Currency = "USD", // Bolivianos (BOB)
                         ProductData = new SessionLineItemPriceDataProductDataOptions
                         {
                             Name = $"Pedido #{pedido.PedidoId} - Embutidos Vallejos",

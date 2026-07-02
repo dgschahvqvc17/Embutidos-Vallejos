@@ -112,8 +112,8 @@ else
                     item.style.opacity = '0';
                     setTimeout(() => {
                         item.remove();
-                        document.getElementById('summarySubtotal').textContent = data.total.toLocaleString('es-BO', { style: 'currency', currency: 'BOB' });
-                        document.getElementById('summaryTotal').textContent = data.total.toLocaleString('es-BO', { style: 'currency', currency: 'BOB' });
+                        document.getElementById('summarySubtotal').textContent = data.total.toLocaleString('es-BO', { style: 'currency', currency: 'USD' });
+                        document.getElementById('summaryTotal').textContent = data.total.toLocaleString('es-BO', { style: 'currency', currency: 'USD' });
                         document.getElementById('summaryCount').textContent = data.count + ' unidades';
                         if (!document.querySelector('.cart-item')) location.reload();
                     }, 300);
