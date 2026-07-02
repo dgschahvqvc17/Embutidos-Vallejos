@@ -11,6 +11,8 @@ public class EntregaDto
     public int RepartidorId { get; set; }
     public string? NombreRepartidor { get; set; }
     public string? PlacaVehiculo { get; set; }
+    public string? NombreCliente { get; set; }
+    public string? DireccionEntrega { get; set; }
 }
 
 public class EntregaUpdateDto

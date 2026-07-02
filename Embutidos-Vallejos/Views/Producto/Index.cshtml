@@ -2,6 +2,7 @@
 @{
     ViewData["Title"] = "Productos";
     var categorias = ViewBag.Categorias as List<Embutidos_Vallejos.Models.DTOs.CategoriaDto>;
+    var esCatalogo = ViewBag.Catalogo == true;
 }
 
 <div class="page-header">
@@ -9,13 +10,62 @@
     <p class="page-subtitle">Embutidos artesanales de la mejor calidad</p>
 </div>
 
+<div class="product-carousel">
+    <div class="carousel-track">
+        <div class="carousel-slide">
+            <img src="~/img/chorizo.jpg" alt="Chorizo Artesanal">
+            <div class="carousel-overlay">
+                <h3>Chorizo Artesanal</h3>
+                <p>El sabor tradicional de siempre</p>
+            </div>
+        </div>
+        <div class="carousel-slide">
+            <img src="~/img/embutido1.jpg" alt="Embutidos Premium">
+            <div class="carousel-overlay">
+                <h3>Embutidos Premium</h3>
+                <p>Calidad superior en cada pieza</p>
+            </div>
+        </div>
+        <div class="carousel-slide">
+            <img src="~/img/jamon.jfif" alt="Jamon Especial">
+            <div class="carousel-overlay">
+                <h3>Jamon Especial</h3>
+                <p>Curado lentamente para un sabor unico</p>
+            </div>
+        </div>
+        <div class="carousel-slide">
+            <img src="~/img/jamon2.jfif" alt="Jamon Selecto">
+            <div class="carousel-overlay">
+                <h3>Jamon Selecto</h3>
+                <p>Ideal para tus mejores ocasiones</p>
+            </div>
+        </div>
+        <div class="carousel-slide">
+            <img src="~/img/salchichas.jpg" alt="Salchichas">
+            <div class="carousel-overlay">
+                <h3>Salchichas</h3>
+                <p>Practicas y deliciosas para cualquier momento</p>
+            </div>
+        </div>
+    </div>
+    <button class="carousel-prev" aria-label="Anterior"><i class="fa-solid fa-chevron-left"></i></button>
+    <button class="carousel-next" aria-label="Siguiente"><i class="fa-solid fa-chevron-right"></i></button>
+    <div class="carousel-dots">
+        <button class="carousel-dot active" data-index="0" aria-label="Slide 1"></button>
+        <button class="carousel-dot" data-index="1" aria-label="Slide 2"></button>
+        <button class="carousel-dot" data-index="2" aria-label="Slide 3"></button>
+        <button class="carousel-dot" data-index="3" aria-label="Slide 4"></button>
+        <button class="carousel-dot" data-index="4" aria-label="Slide 5"></button>
+    </div>
+</div>
+
 <div class="category-tabs mb-4">
-    <a asp-action="Index" class="cat-tab @(ViewBag.CategoriaActual == null ? "active" : "")">Todos</a>
+    <a asp-action="Index" asp-route-catalogo="@(esCatalogo ? "true" : "false")" class="cat-tab @(ViewBag.CategoriaActual == null ? "active" : "")">Todos</a>
     @if (categorias != null)
     {
         @foreach (var cat in categorias)
         {
-            <a asp-action="Index" asp-route-categoriaId="@cat.CategoriaId"
+            <a asp-action="Index" asp-route-categoriaId="@cat.CategoriaId" asp-route-catalogo="@(esCatalogo ? "true" : "false")"
                class="cat-tab @(ViewBag.CategoriaActual == cat.CategoriaId ? "active" : "")">
                 @cat.Nombre
             </a>
@@ -58,7 +108,7 @@
                             </span>
                         }
                     </div>
-                    @if (prod.Stock > 0)
+                    @if (!esCatalogo && prod.Stock > 0)
                     {
                         <div class="d-flex gap-2">
                             <div class="qty-selector-sm">
@@ -75,7 +125,7 @@
                             </button>
                         </div>
                     }
-                    else
+                    else if (!esCatalogo)
                     {
                         <button class="btn-disabled" disabled>
                             <i class="fa-solid fa-ban"></i> Agotado
@@ -147,13 +197,89 @@
                 });
         }
 
+        (function() {
+            const track = document.querySelector('.carousel-track');
+            const slides = document.querySelectorAll('.carousel-slide');
+            const prev = document.querySelector('.carousel-prev');
+            const next = document.querySelector('.carousel-next');
+            const dots = document.querySelectorAll('.carousel-dot');
+
+            if (!track || slides.length === 0) return;
+
+            let currentIndex = 0;
+            const totalSlides = slides.length;
+            let autoplayInterval;
+            let touchStartX = 0;
+            let touchEndX = 0;
+
+            function updateCarousel() {
+                track.style.transform = 'translateX(-' + currentIndex * 100 + '%)';
+                dots.forEach(function(dot, i) {
+                    dot.classList.toggle('active', i === currentIndex);
+                });
+            }
+
+            function nextSlide() {
+                currentIndex = (currentIndex + 1) % totalSlides;
+                updateCarousel();
+            }
+
+            function prevSlide() {
+                currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+                updateCarousel();
+            }
+
+            function startAutoplay() {
+                stopAutoplay();
+                autoplayInterval = setInterval(nextSlide, 4200);
+            }
+
+            function stopAutoplay() {
+                if (autoplayInterval) clearInterval(autoplayInterval);
+            }
+
+            if (next) next.addEventListener('click', function() { nextSlide(); startAutoplay(); });
+            if (prev) prev.addEventListener('click', function() { prevSlide(); startAutoplay(); });
+
+            dots.forEach(function(dot) {
+                dot.addEventListener('click', function() {
+                    currentIndex = parseInt(dot.getAttribute('data-index'));
+                    updateCarousel();
+                    startAutoplay();
+                });
+            });
+
+            const carousel = document.querySelector('.product-carousel');
+            if (carousel) {
+                carousel.addEventListener('mouseenter', stopAutoplay);
+                carousel.addEventListener('mouseleave', startAutoplay);
+                carousel.addEventListener('touchstart', function(e) {
+                    touchStartX = e.changedTouches[0].screenX;
+                    stopAutoplay();
+                }, { passive: true });
+                carousel.addEventListener('touchend', function(e) {
+                    touchEndX = e.changedTouches[0].screenX;
+                    var diff = touchStartX - touchEndX;
+                    if (Math.abs(diff) > 50) {
+                        if (diff > 0) nextSlide(); else prevSlide();
+                    }
+                    startAutoplay();
+                });
+            }
+
+            startAutoplay();
+        })();
+
         document.addEventListener('DOMContentLoaded', updateCartCount);
     </script>
 
 }
 
-<a id="cart-fab" asp-controller="Carrito" asp-action="Index" class="cart-fab">
-    <i class="fa-solid fa-bag-shopping"></i>
-    <span>Ver Carrito</span>
-    <span id="cart-fab-count" class="cart-fab-badge">0</span>
-</a>
+@if (!esCatalogo)
+{
+    <a id="cart-fab" asp-controller="Carrito" asp-action="Index" class="cart-fab">
+        <i class="fa-solid fa-bag-shopping"></i>
+        <span>Ver Carrito</span>
+        <span id="cart-fab-count" class="cart-fab-badge">0</span>
+    </a>
+}

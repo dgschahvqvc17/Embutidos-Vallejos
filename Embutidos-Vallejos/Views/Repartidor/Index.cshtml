@@ -1,109 +1,338 @@
-@model List<Embutidos_Vallejos.Models.DTOs.EntregaDto>
+@model Embutidos_Vallejos.Models.DTOs.RepartidorDashboardDto
 @{
-    ViewData["Title"] = "Repartidor - Entregas";
+    ViewData["Title"] = "Mis Entregas";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h1 class="admin-title">Entregas Pendientes</h1>
-        <p class="admin-subtitle">Gestiona las entregas asignadas</p>
-    </div>
+<div class="page-header">
+    <h1 class="page-title"><i class="fa-solid fa-truck-fast me-2"></i> Mis Entregas</h1>
+    <p class="page-subtitle">Hola, @Model.NombreRepartidor. Gestiona tus entregas y pedidos disponibles</p>
 </div>
 
 @if (TempData["Success"] is string s)
 {
-    <div class="alert-custom alert-success-custom">@s</div>
+    <div class="alert-custom alert-success-custom alert-dismissible fade show" role="alert">@s<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
 }
 @if (TempData["Error"] is string e)
 {
-    <div class="alert-custom alert-error-custom">@e</div>
+    <div class="alert-custom alert-error-custom alert-dismissible fade show" role="alert">@e<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
 }
 
-@if (!Model.Any())
-{
-    <div class="empty-state">
-        <i class="fa-solid fa-truck-fast"></i>
-        <h3>No hay entregas pendientes</h3>
-        <p>Todas las entregas han sido completadas.</p>
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card stat-red">
+            <div class="stat-icon"><i class="fa-solid fa-clock"></i></div>
+            <div class="stat-info">
+                <h3>@Model.TotalPendientes</h3>
+                <p>Pendientes / En Camino</p>
+            </div>
+        </div>
     </div>
-}
-else
-{
-    <div class="row g-4">
-        @foreach (var entrega in Model)
+    <div class="col-md-3">
+        <div class="stat-card stat-green">
+            <div class="stat-icon"><i class="fa-solid fa-circle-check"></i></div>
+            <div class="stat-info">
+                <h3>@Model.TotalCompletadas</h3>
+                <p>Completadas</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card stat-gold">
+            <div class="stat-icon"><i class="fa-solid fa-box-open"></i></div>
+            <div class="stat-info">
+                <h3>@Model.TotalDisponibles</h3>
+                <p>Disponibles para Recoger</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card stat-blue">
+            <div class="stat-icon"><i class="fa-solid fa-car"></i></div>
+            <div class="stat-info">
+                <h3>@(Model.PlacaVehiculo ?? "-")</h3>
+                <p>Vehiculo</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="filter-tabs mb-4">
+    <a class="filter-tab active" data-bs-toggle="tab" href="#mis-entregas">Mis Entregas</a>
+    <a class="filter-tab" data-bs-toggle="tab" href="#disponibles">
+        Disponibles para Recoger
+        @if (Model.TotalDisponibles > 0)
         {
-            <div class="col-md-6 col-lg-4">
-                <div class="delivery-card">
-                    <div class="delivery-header">
-                        <span class="delivery-id">#@entrega.EntregaId</span>
-                        <span class="badge-status @(entrega.EstadoEntrega == "Pendiente" ? "status-pending" : "status-info")">
-                            @entrega.EstadoEntrega
-                        </span>
+            <span class="badge-status status-pending ms-2" style="font-size:9px;">@Model.TotalDisponibles</span>
+        }
+    </a>
+    <a class="filter-tab" asp-controller="Repartidor" asp-action="PedidosDisponibles">
+        Explorar Pedidos
+    </a>
+</div>
+
+<div class="tab-content-custom">
+    <div class="tab-pane active" id="mis-entregas">
+        @if (!Model.EntregasPendientes.Any() && !Model.EntregasCompletadas.Any())
+        {
+            <div class="empty-state">
+                <i class="fa-solid fa-truck-fast"></i>
+                <h3>No tienes entregas registradas</h3>
+                <p>Cuando se te asignen entregas apareceran aqui.</p>
+            </div>
+        }
+        else
+        {
+            @if (Model.EntregasPendientes.Any())
+            {
+                <div class="table-container mb-4">
+                    <table class="table-custom">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Pedido</th>
+                                <th>Cliente</th>
+                                <th>Direccion</th>
+                                <th>Estado</th>
+                                <th>Salida</th>
+                                <th>Accion</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var entrega in Model.EntregasPendientes)
+                            {
+                                <tr>
+                                    <td><strong>#@entrega.EntregaId</strong></td>
+                                    <td>#@entrega.PedidoId</td>
+                                    <td>@(entrega.NombreCliente ?? "-")</td>
+                                    <td>@(entrega.DireccionEntrega ?? "-")</td>
+                                    <td>
+                                        @if (entrega.EstadoEntrega == "Pendiente")
+                                        {
+                                            <span class="badge-status status-pending">Pendiente</span>
+                                        }
+                                        else if (entrega.EstadoEntrega == "En Camino")
+                                        {
+                                            <span class="badge-status status-shipping">En Camino</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge-status status-info">@entrega.EstadoEntrega</span>
+                                        }
+                                    </td>
+                                    <td>@(entrega.FechaSalida?.ToString("dd/MM HH:mm") ?? "-")</td>
+                                    <td>
+                                        @if (entrega.EstadoEntrega == "Pendiente")
+                                        {
+                                            <form asp-action="IniciarEntrega" asp-route-id="@entrega.EntregaId" method="post" class="d-inline">
+                                                <button type="submit" class="btn-action btn-action-primary btn-sm">
+                                                    <i class="fa-solid fa-play me-1"></i> Iniciar
+                                                </button>
+                                            </form>
+                                        }
+                                        else if (entrega.EstadoEntrega == "En Camino")
+                                        {
+                                            <button type="button" class="btn-action btn-action-primary btn-sm"
+                                                    data-bs-toggle="modal" data-bs-target="#completarModal-@entrega.EntregaId">
+                                                <i class="fa-solid fa-check me-1"></i> Completar
+                                            </button>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+
+            @if (Model.EntregasCompletadas.Any())
+            {
+                <div class="card-admin">
+                    <div class="card-admin-header">
+                        <h5><i class="fa-solid fa-check-double me-2 text-success"></i>Entregas Completadas</h5>
                     </div>
-                    <div class="delivery-body">
-                        <div class="delivery-info">
-                            <span>Pedido</span>
-                            <strong>#@entrega.PedidoId</strong>
-                        </div>
-                        <div class="delivery-info">
-                            <span>Repartidor</span>
-                            <strong>@(entrega.NombreRepartidor ?? "-")</strong>
-                        </div>
-                        @if (!string.IsNullOrEmpty(entrega.PlacaVehiculo))
-                        {
-                            <div class="delivery-info">
-                                <span>Vehiculo</span>
-                                <strong>@entrega.PlacaVehiculo</strong>
-                            </div>
-                        }
-                        @if (entrega.EstadoEntrega == "En Camino")
-                        {
-                            <div class="delivery-info">
-                                <span>Salida</span>
-                                <strong>@entrega.FechaSalida?.ToString("dd/MM HH:mm")</strong>
-                            </div>
-                        }
-                    </div>
-                    <div class="delivery-actions">
-                        @if (entrega.EstadoEntrega == "Pendiente")
-                        {
-                            <form asp-action="IniciarEntrega" asp-route-id="@entrega.EntregaId" method="post">
-                                <button type="submit" class="btn btn-outline-success btn-sm w-100">
-                                    <i class="fa-solid fa-play me-1"></i> Iniciar Entrega
-                                </button>
-                            </form>
-                        }
-                        else if (entrega.EstadoEntrega == "En Camino")
-                        {
-                            <button type="button" class="btn btn-outline-primary btn-sm w-100"
-                                    data-bs-toggle="modal" data-bs-target="#completarModal-@entrega.EntregaId">
-                                <i class="fa-solid fa-check me-1"></i> Completar Entrega
-                            </button>
-                        }
+                    <div class="table-container" style="border-radius:0;border-left:none;border-right:none;border-bottom:none;">
+                        <table class="table-custom">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Pedido</th>
+                                    <th>Cliente</th>
+                                    <th>Entrega</th>
+                                    <th>Observaciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var entrega in Model.EntregasCompletadas)
+                                {
+                                    <tr>
+                                        <td><strong>#@entrega.EntregaId</strong></td>
+                                        <td>#@entrega.PedidoId</td>
+                                        <td>@(entrega.NombreCliente ?? "-")</td>
+                                        <td>@(entrega.FechaEntrega?.ToString("dd/MM/yyyy HH:mm") ?? "-")</td>
+                                        <td>@(string.IsNullOrEmpty(entrega.Observaciones) ? "-" : entrega.Observaciones)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-            </div>
+            }
+        }
+    </div>
 
-            <!-- Complete Modal -->
-            <div class="modal fade" id="completarModal-@entrega.EntregaId" tabindex="-1">
-                <div class="modal-dialog">
-                    <div class="modal-content modal-dark">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Completar Entrega #@entrega.EntregaId</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    <div class="tab-pane" id="disponibles">
+        @if (!Model.PedidosDisponibles.Any())
+        {
+            <div class="empty-state">
+                <i class="fa-solid fa-box-open"></i>
+                <h3>No hay pedidos disponibles</h3>
+                <p>Por el momento no hay pedidos pendientes de recoger.</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-container">
+                <table class="table-custom">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Cliente</th>
+                            <th>Fecha</th>
+                            <th>Total</th>
+                            <th>Estado</th>
+                            <th>Pago</th>
+                            <th>Accion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var p in Model.PedidosDisponibles)
+                        {
+                            <tr>
+                                <td><strong>#@p.PedidoId</strong></td>
+                                <td>@p.NombreCliente</td>
+                                <td>@p.FechaPedido.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>@p.Total.ToString("C", new System.Globalization.CultureInfo("es-BO"))</td>
+                                <td>
+                                    @switch (p.Estado)
+                                    {
+                                        case "Pagado": <span class="badge-status status-paid">Pagado</span>; break;
+                                        case "En Preparacion": <span class="badge-status status-progress">En Preparacion</span>; break;
+                                        default: <span class="badge-status status-inactive">@p.Estado</span>; break;
+                                    }
+                                </td>
+                                <td>
+                                    @if (p.Pago != null)
+                                    {
+                                        <span>@p.Pago.TipoPago</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button type="button" class="btn-icon btn-view" title="Ver detalle"
+                                                data-bs-toggle="modal" data-bs-target="#detalleModal-@p.PedidoId">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </button>
+                                        <form asp-action="TomarPedido" asp-route-pedidoId="@p.PedidoId" method="post" class="d-inline"
+                                              onsubmit="return confirm('¿Deseas tomar el pedido #@p.PedidoId? Se asignara a tu nombre y pasara a estado En Preparacion.')">
+                                            <button type="submit" class="btn-action btn-action-primary btn-sm">
+                                                <i class="fa-solid fa-hand me-1"></i> Tomar
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+@if (Model.PedidosDisponibles.Any())
+{
+    <div class="mt-4">
+        <h5 class="mb-3"><i class="fa-solid fa-circle-info me-2" style="color:var(--accent);"></i>Detalle de Pedidos Disponibles</h5>
+        @foreach (var p in Model.PedidosDisponibles)
+        {
+            <div class="card-admin mb-3">
+                <div class="card-admin-header">
+                    <h5>Pedido #@p.PedidoId - @p.NombreCliente</h5>
+                    <span class="badge-status status-paid">@p.Estado</span>
+                </div>
+                <div class="card-admin-body">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <div class="info-label">Cliente</div>
+                            <div class="info-value">@p.NombreCliente</div>
                         </div>
-                        <form asp-action="CompletarEntrega" asp-route-id="@entrega.EntregaId" method="post">
-                            <div class="modal-body">
-                                <p class="text-muted mb-3">Registra la finalizacion de la entrega del Pedido #@entrega.PedidoId</p>
-                                <label class="form-label-custom">Observaciones (opcional)</label>
-                                <textarea name="observaciones" class="form-control-custom" rows="3" placeholder="Notas sobre la entrega..."></textarea>
+                        <div class="col-md-6">
+                            <div class="info-label">Fecha</div>
+                            <div class="info-value">@p.FechaPedido.ToString("dd/MM/yyyy HH:mm")</div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-label">Direccion de Entrega</div>
+                            <div class="info-value">@(p.DireccionEntrega ?? "-")</div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-label">Total</div>
+                            <div class="info-value" style="color:var(--accent);font-weight:700;">@p.Total.ToString("C", new System.Globalization.CultureInfo("es-BO"))</div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-label">Estado</div>
+                            <div class="info-value">
+                                @switch (p.Estado)
+                                {
+                                    case "Pagado": <span class="badge-status status-paid">Pagado</span>; break;
+                                    case "En Preparacion": <span class="badge-status status-progress">En Preparacion</span>; break;
+                                    default: <span class="badge-status status-inactive">@p.Estado</span>; break;
+                                }
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn-cancel" data-bs-dismiss="modal">Cancelar</button>
-                                <button type="submit" class="btn-submit-sm">
-                                    <i class="fa-solid fa-check me-1"></i> Completar
-                                </button>
-                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-label">Pago</div>
+                            <div class="info-value">@(p.Pago?.TipoPago ?? "-")</div>
+                        </div>
+                    </div>
+
+                    @if (p.Detalles.Any())
+                    {
+                        <div class="info-label mb-2">Productos</div>
+                        <div class="table-detalle">
+                            <table class="detail-table">
+                                <thead>
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th>Cant.</th>
+                                        <th>P. Unitario</th>
+                                        <th>Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var d in p.Detalles)
+                                    {
+                                        <tr>
+                                            <td>@d.NombreProducto</td>
+                                            <td>@d.Cantidad</td>
+                                            <td>@d.PrecioUnitario.ToString("C", new System.Globalization.CultureInfo("es-BO"))</td>
+                                            <td style="color:var(--accent);font-weight:600;">@d.Subtotal.ToString("C", new System.Globalization.CultureInfo("es-BO"))</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+
+                    <div class="mt-3 text-end">
+                        <form asp-action="TomarPedido" asp-route-pedidoId="@p.PedidoId" method="post" class="d-inline"
+                              onsubmit="return confirm('¿Deseas tomar el pedido #@p.PedidoId? Se asignara a tu nombre y pasara a estado En Preparacion.')">
+                            <button type="submit" class="btn-action btn-action-primary">
+                                <i class="fa-solid fa-hand me-1"></i> Tomar Pedido
+                            </button>
                         </form>
                     </div>
                 </div>
@@ -113,5 +342,16 @@ else
 }
 
 @section Scripts {
-
+    <script>
+        $(function() {
+            var links = document.querySelectorAll('.filter-tab');
+            var currentPath = window.location.pathname.toLowerCase();
+            links.forEach(function(link) {
+                var href = link.getAttribute('href');
+                if (href && currentPath.indexOf(href.toLowerCase()) === 0) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
 }

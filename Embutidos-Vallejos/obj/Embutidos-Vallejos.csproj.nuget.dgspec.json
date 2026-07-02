@@ -55,6 +55,10 @@
               "target": "Package",
               "version": "[4.0.3, )"
             },
+            "ClosedXML": {
+              "target": "Package",
+              "version": "[0.105.0, )"
+            },
             "Microsoft.EntityFrameworkCore.SqlServer": {
               "target": "Package",
               "version": "[8.0.11, )"
@@ -68,6 +72,10 @@
             "QRCoder": {
               "target": "Package",
               "version": "[1.6.0, )"
+            },
+            "QuestPDF": {
+              "target": "Package",
+              "version": "[2024.10.2, )"
             },
             "Stripe.net": {
               "target": "Package",

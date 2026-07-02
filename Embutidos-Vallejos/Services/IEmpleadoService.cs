@@ -1,10 +1,13 @@
 using Embutidos_Vallejos.Models.DTOs;
+using Embutidos_Vallejos.Models.Entities;
 
 namespace Embutidos_Vallejos.Services;
 
 public interface IEmpleadoService
 {
     Task<List<EmpleadoDto>> GetAllAsync();
+    Task<List<EmpleadoDto>> GetByRolIdAsync(int rolId);
+    Task<List<Rol>> GetAllRolesAsync();
     Task<EmpleadoDto?> GetByIdAsync(int id);
     Task<EmpleadoDto> CreateAsync(EmpleadoCreateDto dto);
     Task<EmpleadoDto?> UpdateAsync(int id, EmpleadoUpdateDto dto);

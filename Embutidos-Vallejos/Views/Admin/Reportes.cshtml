@@ -4,9 +4,19 @@
     var reporteInventario = ViewBag.ReporteInventario as Embutidos_Vallejos.Models.DTOs.ReporteInventarioDto;
 }
 
-<div class="mb-4">
-    <h1 class="admin-title">Reportes</h1>
-    <p class="admin-subtitle">Analisis de ventas e inventario</p>
+<div class="mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+    <div>
+        <h1 class="admin-title">Reportes</h1>
+        <p class="admin-subtitle">Analisis de ventas e inventario</p>
+    </div>
+    <div class="reporte-export-btns">
+        <a asp-action="ExportarReporteCompletoPdf" class="btn-export btn-export-pdf">
+            <i class="fa-solid fa-file-pdf"></i> Exportar Todo PDF
+        </a>
+        <a asp-action="ExportarReporteCompletoExcel" class="btn-export btn-export-excel">
+            <i class="fa-solid fa-file-excel"></i> Exportar Todo Excel
+        </a>
+    </div>
 </div>
 
 <div class="row g-4 mb-4">
@@ -14,6 +24,14 @@
         <div class="card-reporte">
             <div class="card-reporte-header">
                 <h5><i class="fa-solid fa-chart-simple me-2"></i> Ventas (Ultimos 30 dias)</h5>
+                <div class="reporte-export-btns">
+                    <a asp-action="ExportarVentasPdf" class="btn-export btn-export-pdf" title="Exportar PDF">
+                        <i class="fa-solid fa-file-pdf"></i> PDF
+                    </a>
+                    <a asp-action="ExportarVentasExcel" class="btn-export btn-export-excel" title="Exportar Excel">
+                        <i class="fa-solid fa-file-excel"></i> Excel
+                    </a>
+                </div>
             </div>
             <div class="card-reporte-body">
                 <div class="row g-3">
@@ -58,6 +76,14 @@
         <div class="card-reporte">
             <div class="card-reporte-header">
                 <h5><i class="fa-solid fa-boxes-stacked me-2"></i> Inventario</h5>
+                <div class="reporte-export-btns">
+                    <a asp-action="ExportarInventarioPdf" class="btn-export btn-export-pdf" title="Exportar PDF">
+                        <i class="fa-solid fa-file-pdf"></i> PDF
+                    </a>
+                    <a asp-action="ExportarInventarioExcel" class="btn-export btn-export-excel" title="Exportar Excel">
+                        <i class="fa-solid fa-file-excel"></i> Excel
+                    </a>
+                </div>
             </div>
             <div class="card-reporte-body">
                 <div class="row g-3">
@@ -111,6 +137,14 @@
         <div class="card-reporte">
             <div class="card-reporte-header">
                 <h5><i class="fa-solid fa-truck me-2"></i> Pedidos (Ultimos 30 dias)</h5>
+                <div class="reporte-export-btns">
+                    <a asp-action="ExportarVentasPdf" class="btn-export btn-export-pdf" title="Exportar PDF">
+                        <i class="fa-solid fa-file-pdf"></i> PDF
+                    </a>
+                    <a asp-action="ExportarVentasExcel" class="btn-export btn-export-excel" title="Exportar Excel">
+                        <i class="fa-solid fa-file-excel"></i> Excel
+                    </a>
+                </div>
             </div>
             <div class="card-reporte-body">
                 <div class="row g-3">
@@ -149,6 +183,14 @@
         <div class="card-reporte">
             <div class="card-reporte-header">
                 <h5><i class="fa-solid fa-triangle-exclamation me-2"></i> Alertas</h5>
+                <div class="reporte-export-btns">
+                    <a asp-action="ExportarInventarioPdf" class="btn-export btn-export-pdf" title="Exportar PDF">
+                        <i class="fa-solid fa-file-pdf"></i> PDF
+                    </a>
+                    <a asp-action="ExportarInventarioExcel" class="btn-export btn-export-excel" title="Exportar Excel">
+                        <i class="fa-solid fa-file-excel"></i> Excel
+                    </a>
+                </div>
             </div>
             <div class="card-reporte-body">
                 @if (reporteInventario?.ProductosSinStock > 0 || reporteInventario?.ProductosStockBajo > 0)

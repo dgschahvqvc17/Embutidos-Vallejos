@@ -168,6 +168,20 @@ public class PedidoService : IPedidoService
         return true;
     }
 
+    public async Task<List<PedidoDto>> GetDisponiblesParaRepartoAsync()
+    {
+        return await _db.Pedidos
+            .Include(p => p.Cliente)
+            .Include(p => p.Repartidor)
+            .Include(p => p.DetallesPedido).ThenInclude(d => d.Producto)
+            .Include(p => p.Pago)
+            .Include(p => p.Entrega)
+            .Where(p => p.RepartidorId == null && (p.Estado == "Pagado" || p.Estado == "En Preparacion"))
+            .OrderByDescending(p => p.FechaPedido)
+            .Select(p => MapToDto(p))
+            .ToListAsync();
+    }
+
     private static PedidoDto MapToDto(Pedido p) => new()
     {
         PedidoId = p.PedidoId,

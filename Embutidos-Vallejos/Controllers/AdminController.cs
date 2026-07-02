@@ -16,6 +16,7 @@ public class AdminController : Controller
     private readonly IPedidoService _pedidoService;
     private readonly IReporteService _reporteService;
     private readonly IEntregaService _entregaService;
+    private readonly IReporteExportacionService _reporteExportacionService;
 
     public AdminController(
         IEmpleadoService empleadoService,
@@ -24,7 +25,8 @@ public class AdminController : Controller
         IRepartidorService repartidorService,
         IPedidoService pedidoService,
         IReporteService reporteService,
-        IEntregaService entregaService)
+        IEntregaService entregaService,
+        IReporteExportacionService reporteExportacionService)
     {
         _empleadoService = empleadoService;
         _productoService = productoService;
@@ -33,6 +35,7 @@ public class AdminController : Controller
         _pedidoService = pedidoService;
         _reporteService = reporteService;
         _entregaService = entregaService;
+        _reporteExportacionService = reporteExportacionService;
     }
 
     public async Task<IActionResult> Index()
@@ -42,9 +45,16 @@ public class AdminController : Controller
     }
 
     // ─── Empleados ───
-    public async Task<IActionResult> Empleados()
+    public async Task<IActionResult> Empleados(int? rolId)
     {
-        var empleados = await _empleadoService.GetAllAsync();
+        List<EmpleadoDto> empleados;
+        if (rolId.HasValue)
+            empleados = await _empleadoService.GetByRolIdAsync(rolId.Value);
+        else
+            empleados = await _empleadoService.GetAllAsync();
+
+        ViewBag.RolFiltro = rolId;
+        ViewBag.Roles = await _empleadoService.GetAllRolesAsync();
         return View(empleados);
     }
 
@@ -400,5 +410,49 @@ public class AdminController : Controller
     {
         var reporte = await _reporteService.GetReporteVentasAsync(desde, hasta);
         return Json(reporte);
+    }
+
+    public async Task<IActionResult> ExportarVentasPdf()
+    {
+        var reporte = await _reporteService.GetReporteVentasAsync();
+        var pdf = await _reporteExportacionService.ExportarVentasPdfAsync(reporte);
+        return File(pdf, "application/pdf", $"reporte-ventas-{DateTime.Now:yyyyMMdd}.pdf");
+    }
+
+    public async Task<IActionResult> ExportarInventarioPdf()
+    {
+        var reporte = await _reporteService.GetReporteInventarioAsync();
+        var pdf = await _reporteExportacionService.ExportarInventarioPdfAsync(reporte);
+        return File(pdf, "application/pdf", $"reporte-inventario-{DateTime.Now:yyyyMMdd}.pdf");
+    }
+
+    public async Task<IActionResult> ExportarVentasExcel()
+    {
+        var reporte = await _reporteService.GetReporteVentasAsync();
+        var excel = await _reporteExportacionService.ExportarVentasExcelAsync(reporte);
+        return File(excel, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"reporte-ventas-{DateTime.Now:yyyyMMdd}.xlsx");
+    }
+
+    public async Task<IActionResult> ExportarInventarioExcel()
+    {
+        var reporte = await _reporteService.GetReporteInventarioAsync();
+        var excel = await _reporteExportacionService.ExportarInventarioExcelAsync(reporte);
+        return File(excel, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"reporte-inventario-{DateTime.Now:yyyyMMdd}.xlsx");
+    }
+
+    public async Task<IActionResult> ExportarReporteCompletoPdf()
+    {
+        var ventas = await _reporteService.GetReporteVentasAsync();
+        var inventario = await _reporteService.GetReporteInventarioAsync();
+        var pdf = await _reporteExportacionService.ExportarReporteCompletoPdfAsync(ventas, inventario);
+        return File(pdf, "application/pdf", $"reporte-general-{DateTime.Now:yyyyMMdd}.pdf");
+    }
+
+    public async Task<IActionResult> ExportarReporteCompletoExcel()
+    {
+        var ventas = await _reporteService.GetReporteVentasAsync();
+        var inventario = await _reporteService.GetReporteInventarioAsync();
+        var excel = await _reporteExportacionService.ExportarReporteCompletoExcelAsync(ventas, inventario);
+        return File(excel, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"reporte-general-{DateTime.Now:yyyyMMdd}.xlsx");
     }
 }

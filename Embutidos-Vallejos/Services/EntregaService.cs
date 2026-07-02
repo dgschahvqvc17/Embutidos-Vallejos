@@ -15,6 +15,7 @@ public class EntregaService : IEntregaService
     {
         return await _db.Entregas
             .Include(e => e.Repartidor)
+            .Include(e => e.Pedido).ThenInclude(p => p!.Cliente)
             .Where(e => e.PedidoId == pedidoId)
             .Select(e => MapToDto(e))
             .FirstOrDefaultAsync();
@@ -24,6 +25,7 @@ public class EntregaService : IEntregaService
     {
         return await _db.Entregas
             .Include(e => e.Repartidor)
+            .Include(e => e.Pedido).ThenInclude(p => p!.Cliente)
             .Where(e => e.RepartidorId == repartidorId)
             .OrderByDescending(e => e.FechaSalida)
             .Select(e => MapToDto(e))
@@ -100,10 +102,33 @@ public class EntregaService : IEntregaService
         return true;
     }
 
+    public async Task<List<EntregaDto>> GetPendientesByRepartidorAsync(int repartidorId)
+    {
+        return await _db.Entregas
+            .Include(e => e.Repartidor)
+            .Include(e => e.Pedido).ThenInclude(p => p!.Cliente)
+            .Where(e => e.RepartidorId == repartidorId && e.EstadoEntrega != "Entregado")
+            .OrderBy(e => e.FechaSalida)
+            .Select(e => MapToDto(e))
+            .ToListAsync();
+    }
+
+    public async Task<List<EntregaDto>> GetCompletadasAsync()
+    {
+        return await _db.Entregas
+            .Include(e => e.Repartidor)
+            .Include(e => e.Pedido).ThenInclude(p => p!.Cliente)
+            .Where(e => e.EstadoEntrega == "Entregado")
+            .OrderByDescending(e => e.FechaEntrega)
+            .Select(e => MapToDto(e))
+            .ToListAsync();
+    }
+
     public async Task<List<EntregaDto>> GetPendientesAsync()
     {
         return await _db.Entregas
             .Include(e => e.Repartidor)
+            .Include(e => e.Pedido).ThenInclude(p => p!.Cliente)
             .Where(e => e.EstadoEntrega != "Entregado")
             .OrderBy(e => e.FechaSalida)
             .Select(e => MapToDto(e))
@@ -120,6 +145,8 @@ public class EntregaService : IEntregaService
         PedidoId = e.PedidoId,
         RepartidorId = e.RepartidorId,
         NombreRepartidor = $"{e.Repartidor.Nombre} {e.Repartidor.Apellido}",
-        PlacaVehiculo = e.Repartidor.PlacaVehiculo
+        PlacaVehiculo = e.Repartidor.PlacaVehiculo,
+        NombreCliente = e.Pedido.Cliente != null ? $"{e.Pedido.Cliente.Nombre} {e.Pedido.Cliente.Apellido}" : null,
+        DireccionEntrega = e.Pedido.DireccionEntrega
     };
 }

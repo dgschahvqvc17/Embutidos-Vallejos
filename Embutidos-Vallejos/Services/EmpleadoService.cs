@@ -33,6 +33,31 @@ public class EmpleadoService : IEmpleadoService
             .ToListAsync();
     }
 
+    public async Task<List<EmpleadoDto>> GetByRolIdAsync(int rolId)
+    {
+        return await _db.Empleados
+            .Include(e => e.Rol)
+            .Where(e => e.RolId == rolId)
+            .Select(e => new EmpleadoDto
+            {
+                EmpleadoId = e.EmpleadoId,
+                Nombre = e.Nombre,
+                Apellido = e.Apellido,
+                Telefono = e.Telefono,
+                Email = e.Email,
+                FechaContratacion = e.FechaContratacion,
+                Estado = e.Estado,
+                NombreRol = e.Rol.NombreRol,
+                PlacaVehiculo = e.Repartidor != null ? e.Repartidor.PlacaVehiculo : null
+            })
+            .ToListAsync();
+    }
+
+    public async Task<List<Rol>> GetAllRolesAsync()
+    {
+        return await _db.Roles.OrderBy(r => r.RolId).ToListAsync();
+    }
+
     public async Task<EmpleadoDto?> GetByIdAsync(int id)
     {
         return await _db.Empleados

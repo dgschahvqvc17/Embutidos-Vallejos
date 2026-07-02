@@ -6,6 +6,7 @@ public interface IRepartidorService
 {
     Task<List<RepartidorDto>> GetAllAsync();
     Task<RepartidorDto?> GetByIdAsync(int id);
+    Task<RepartidorDto?> GetByEmpleadoIdAsync(int empleadoId);
     Task<List<RepartidorDto>> GetDisponiblesAsync();
     Task<RepartidorDto> CreateAsync(RepartidorCreateDto dto);
     Task<RepartidorDto?> UpdateAsync(int id, RepartidorUpdateDto dto);

@@ -14,7 +14,7 @@ public class ProductoController : Controller
         _categoriaService = categoriaService;
     }
 
-    public async Task<IActionResult> Index(int? categoriaId)
+    public async Task<IActionResult> Index(int? categoriaId, bool catalogo = false)
     {
         var productos = categoriaId.HasValue
             ? await _productoService.GetByCategoriaAsync(categoriaId.Value)
@@ -22,6 +22,7 @@ public class ProductoController : Controller
 
         ViewBag.Categorias = await _categoriaService.GetAllAsync();
         ViewBag.CategoriaActual = categoriaId;
+        ViewBag.Catalogo = catalogo;
 
         return View(productos);
     }

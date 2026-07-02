@@ -1,0 +1,73 @@
+@model List<Embutidos_Vallejos.Models.DTOs.EntregaDto>
+@{
+    ViewData["Title"] = "Pedidos Realizados";
+}
+
+<div class="page-header">
+    <h1 class="page-title"><i class="fa-solid fa-check-double me-2"></i> Pedidos Realizados</h1>
+    <p class="page-subtitle">Historial de entregas que has completado</p>
+</div>
+
+@if (TempData["Success"] is string s)
+{
+    <div class="alert-custom alert-success-custom alert-dismissible fade show" role="alert">@s<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+}
+@if (TempData["Error"] is string e)
+{
+    <div class="alert-custom alert-error-custom alert-dismissible fade show" role="alert">@e<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+}
+
+@if (!Model.Any())
+{
+    <div class="empty-state">
+        <i class="fa-solid fa-check-double"></i>
+        <h3>No hay pedidos realizados</h3>
+        <p>Aun no has completado ninguna entrega.</p>
+        <a asp-action="Index" class="btn-action btn-action-primary">
+            <i class="fa-solid fa-truck-fast me-1"></i> Ver Entregas
+        </a>
+    </div>
+}
+else
+{
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="mini-stat">
+                <span class="mini-stat-label">Entregas Completadas</span>
+                <span class="mini-stat-value">@Model.Count</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table class="table-custom">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Pedido</th>
+                    <th>Cliente</th>
+                    <th>Direccion</th>
+                    <th>Fecha Entrega</th>
+                    <th>Observaciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var entrega in Model)
+                {
+                    <tr>
+                        <td><strong>#@entrega.EntregaId</strong></td>
+                        <td>#@entrega.PedidoId</td>
+                        <td>@(entrega.NombreCliente ?? "-")</td>
+                        <td>@(entrega.DireccionEntrega ?? "-")</td>
+                        <td>@(entrega.FechaEntrega?.ToString("dd/MM/yyyy HH:mm") ?? "-")</td>
+                        <td>@(string.IsNullOrEmpty(entrega.Observaciones) ? "-" : entrega.Observaciones)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@section Scripts {
+
+}

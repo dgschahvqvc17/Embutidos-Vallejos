@@ -82,6 +82,12 @@
                         <a class="sidebar-link" asp-controller="Repartidor" asp-action="Index">
                             <i class="fa-solid fa-truck-fast"></i> Entregas
                         </a>
+                        <a class="sidebar-link" asp-controller="Repartidor" asp-action="PedidosDisponibles">
+                            <i class="fa-solid fa-box-open"></i> Pedidos Disponibles
+                        </a>
+                        <a class="sidebar-link" asp-controller="Repartidor" asp-action="PedidosRealizados">
+                            <i class="fa-solid fa-check-double"></i> Pedidos Realizados
+                        </a>
                     }
                     else if (User.FindFirstValue("UserType") == "Cliente")
                     {
@@ -107,7 +113,7 @@
                         <i class="fa-regular fa-user"></i> Mi Perfil
                     </a>
                     <a class="sidebar-link" asp-controller="Account" asp-action="Logout">
-                        <i class="fa-regular fa-arrow-right-from-bracket"></i> Cerrar Sesion
+                        <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesion
                     </a>
                 </nav>
 
@@ -181,13 +187,13 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link nav-link-white" asp-controller="Producto" asp-action="Index">
+                                <a class="nav-link nav-link-white" asp-controller="Producto" asp-action="Index" asp-route-catalogo="true">
                                     <i class="fa-solid fa-store me-1"></i> Productos
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link btn-login-nav-light" asp-controller="Account" asp-action="Login">
-                                    <i class="fa-regular fa-arrow-right-to-bracket me-1"></i> Iniciar Sesion
+                                    <i class="fa-solid fa-arrow-right-to-bracket me-1"></i> Iniciar Sesion
                                 </a>
                             </li>
                         </ul>

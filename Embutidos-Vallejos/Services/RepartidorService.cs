@@ -46,6 +46,24 @@ public class RepartidorService : IRepartidorService
             .FirstOrDefaultAsync();
     }
 
+    public async Task<RepartidorDto?> GetByEmpleadoIdAsync(int empleadoId)
+    {
+        return await _db.Repartidores
+            .Where(r => r.EmpleadoId == empleadoId)
+            .Select(r => new RepartidorDto
+            {
+                RepartidorId = r.RepartidorId,
+                Nombre = r.Nombre,
+                Apellido = r.Apellido,
+                Telefono = r.Telefono,
+                PlacaVehiculo = r.PlacaVehiculo,
+                Estado = r.Estado,
+                Email = r.Empleado != null ? r.Empleado.Email : null,
+                PedidosAsignados = r.Pedidos.Count(p => p.Estado != "Entregado" && p.Estado != "Cancelado")
+            })
+            .FirstOrDefaultAsync();
+    }
+
     public async Task<List<RepartidorDto>> GetDisponiblesAsync()
     {
         return await _db.Repartidores

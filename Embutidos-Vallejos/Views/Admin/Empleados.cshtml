@@ -1,6 +1,8 @@
 @model List<Embutidos_Vallejos.Models.DTOs.EmpleadoDto>
 @{
     ViewData["Title"] = "Gestion de Empleados";
+    var roles = ViewBag.Roles as List<Embutidos_Vallejos.Models.Entities.Rol>;
+    var rolFiltro = ViewBag.RolFiltro as int?;
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -17,6 +19,25 @@
 {
     <div class="alert-custom alert-success-custom">@TempData["Success"]</div>
 }
+
+<div class="filter-tabs mb-4">
+    <a asp-action="Empleados" class="filter-tab @(rolFiltro == null ? "active" : "")">Todos</a>
+    @if (roles != null)
+    {
+        foreach (var r in roles)
+        {
+            <a asp-action="Empleados" asp-route-rolId="@r.RolId" class="filter-tab @(rolFiltro == r.RolId ? "active" : "")">
+                @r.NombreRol
+            </a>
+        }
+    }
+    @if (rolFiltro != null)
+    {
+        <a asp-action="Empleados" class="filter-tab" style="margin-left:auto;">
+            <i class="fa-solid fa-xmark me-1"></i> Limpiar filtro
+        </a>
+    }
+</div>
 
 <div class="table-container">
     <table class="table-custom">

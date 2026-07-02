@@ -12,4 +12,5 @@ public interface IPedidoService
     Task<bool> UpdateEstadoAsync(int id, string estado);
     Task<bool> AsignarRepartidorAsync(int pedidoId, int repartidorId);
     Task<bool> CancelarAsync(int id);
+    Task<List<PedidoDto>> GetDisponiblesParaRepartoAsync();
 }

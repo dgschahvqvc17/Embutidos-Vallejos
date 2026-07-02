@@ -29,6 +29,7 @@ builder.Services.AddScoped<IRepartidorService, RepartidorService>();
 builder.Services.AddScoped<IEntregaService, EntregaService>();
 builder.Services.AddScoped<IVentaService, VentaService>();
 builder.Services.AddScoped<IReporteService, ReporteService>();
+builder.Services.AddScoped<IReporteExportacionService, ReporteExportacionService>();
 builder.Services.AddScoped<IQRService, QRService>();
 builder.Services.AddHttpClient<IPayPalService, PayPalService>();
 builder.Services.AddScoped<IStripeService, StripeService>();

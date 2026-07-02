@@ -17,7 +17,7 @@
     --border-hover: #32344A;
     --text-primary: #E8E8EE;
     --text-secondary: #fff;
-    --text-muted: #55566A;
+    --text-muted: #ffffff;
     --success: #00C853;
     --success-light: rgba(0,200,83,0.1);
     --danger: #FF1744;
@@ -930,9 +930,23 @@ select.form-control-custom option { background: var(--bg-card); color: var(--tex
 .card-detail-title { font-size: 13px; font-weight: 700; padding: 14px 18px; margin: 0; border-bottom: 1px solid var(--border-color); }
 
 .card-reporte { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; }
-.card-reporte-header { padding: 16px 20px; border-bottom: 1px solid var(--border-color); }
+.card-reporte-header { padding: 16px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
 .card-reporte-header h5 { margin: 0; font-size: 14px; font-weight: 600; }
 .card-reporte-body { padding: 16px 20px; }
+
+.reporte-export-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+.btn-export {
+    padding: 5px 12px; border-radius: 6px; border: 1px solid var(--border-color);
+    background: var(--bg-elevated); color: var(--text-secondary); font-size: 11px;
+    font-weight: 600; cursor: pointer; transition: all 0.2s ease;
+    display: inline-flex; align-items: center; gap: 5px; text-decoration: none;
+}
+.btn-export:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+.btn-export i { font-size: 12px; }
+.btn-export-pdf { border-color: rgba(239,68,68,0.25); color: #EF4444; }
+.btn-export-pdf:hover { background: rgba(239,68,68,0.1); border-color: #EF4444; color: #EF4444; }
+.btn-export-excel { border-color: rgba(34,197,94,0.25); color: #22C55E; }
+.btn-export-excel:hover { background: rgba(34,197,94,0.1); border-color: #22C55E; color: #22C55E; }
 
 .card-dashboard {
     background: var(--bg-card);
@@ -999,7 +1013,7 @@ select.form-control-custom option { background: var(--bg-card); color: var(--tex
 .product-img { width: 100%; height: 100%; object-fit: contain; padding: 14px; transition: transform 0.35s ease; }
 .product-card:hover .product-img { transform: scale(1.04); }
 .product-badge { position: absolute; top: 10px; right: 10px; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; }
-.badge-warning { background: var(--warning-light); color: var(--warning); border: 1px solid rgba(255,214,0,0.2); }
+.badge-warning { background: var(--warning); color: #000; border: 1px solid rgba(255,214,0,0.4); }
 .badge-danger { background: var(--danger-light); color: var(--danger); border: 1px solid rgba(255,23,68,0.2); }
 
 .product-info { padding: 14px 16px 16px; }
@@ -2667,5 +2681,132 @@ select.form-control-custom option { background: var(--bg-card); color: var(--tex
 .btn-premium-accent:hover {
     box-shadow: 0 8px 24px rgba(201, 169, 78, 0.3) !important;
     color: #000 !important;
+}
+
+/* ════════════════════════════════════════
+   PRODUCT CAROUSEL
+   ════════════════════════════════════════ */
+.product-carousel {
+    position: relative;
+    width: 100%;
+    height: 420px;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    margin-bottom: 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-card);
+}
+.carousel-track {
+    display: flex;
+    transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    height: 100%;
+    will-change: transform;
+}
+.carousel-slide {
+    min-width: 100%;
+    height: 100%;
+    position: relative;
+}
+.carousel-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+.carousel-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 60px 28px 28px;
+    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.35) 60%, transparent 100%);
+    color: #fff;
+    pointer-events: none;
+}
+.carousel-overlay h3 {
+    font-family: var(--font-display);
+    font-size: 30px;
+    font-weight: 800;
+    margin: 0;
+    text-shadow: 0 3px 12px rgba(0,0,0,0.5);
+    letter-spacing: -0.3px;
+}
+.carousel-overlay p {
+    margin: 6px 0 0;
+    font-size: 14px;
+    opacity: 0.85;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+.carousel-prev, .carousel-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #fff;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+    font-size: 18px;
+    z-index: 10;
+    padding: 0;
+    opacity: 0.85;
+}
+.carousel-prev:hover, .carousel-next:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #090A0D;
+    opacity: 1;
+    transform: translateY(-50%) scale(1.08);
+    box-shadow: 0 8px 28px rgba(201,169,78,0.35);
+}
+.carousel-prev { left: 18px; }
+.carousel-next { right: 18px; }
+.carousel-dots {
+    position: absolute;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 10;
+}
+.carousel-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.35);
+    border: none;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    padding: 0;
+    backdrop-filter: blur(4px);
+}
+.carousel-dot.active {
+    background: var(--accent);
+    width: 32px;
+    border-radius: 6px;
+    box-shadow: 0 0 12px rgba(201,169,78,0.5);
+}
+.carousel-slide:hover .carousel-overlay {
+    background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.45) 60%, transparent 100%);
+}
+@media (max-width: 767.98px) {
+    .product-carousel { height: 260px; margin-bottom: 18px; }
+    .carousel-overlay h3 { font-size: 20px; }
+    .carousel-overlay p { font-size: 12px; }
+    .carousel-prev, .carousel-next { width: 40px; height: 40px; font-size: 16px; }
+    .carousel-prev { left: 10px; }
+    .carousel-next { right: 10px; }
 }
 
